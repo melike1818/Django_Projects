@@ -1,0 +1,159 @@
+.u-section-1 .u-sheet-1 {
+  min-height: 182px;
+}
+
+.u-section-1 .u-text-1 {
+  text-shadow: 2px -2px 8px rgba(128,128,128,1);
+  font-size: 3.75rem;
+  margin: 65px auto 60px;
+}
+
+@media (max-width: 1199px) {
+  .u-section-1 .u-text-1 {
+    line-height: 66px;
+    letter-spacing: normal;
+    font-weight: normal;
+  }
+}
+
+@media (max-width: 575px) {
+  .u-section-1 .u-text-1 {
+    font-size: 3rem;
+  }
+}.u-section-2 .u-sheet-1 {
+  min-height: 864px;
+}
+
+.u-section-2 .u-form-1 {
+  background-image: none;
+  height: 744px;
+  width: 570px;
+  margin: 40px auto -15px;
+}
+
+.u-section-2 .u-label-1 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-2 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-2 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-3 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-3 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-4 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-4 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-5 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-5 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-6 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-6 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-7 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-7 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-form-group-8 {
+  margin-left: 0;
+}
+
+.u-section-2 .u-label-8 {
+  width: 119px;
+  letter-spacing: 0px;
+  font-size: 1rem;
+}
+
+.u-section-2 .u-btn-1 {
+  background-image: none;
+  border-style: none;
+}
+
+@media (max-width: 1199px) {
+  .u-section-2 .u-label-1 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-2 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-3 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-4 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-5 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-6 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-7 {
+    font-weight: normal;
+  }
+
+  .u-section-2 .u-label-8 {
+    font-weight: normal;
+  }
+}
+
+@media (max-width: 767px) {
+  .u-section-2 .u-form-1 {
+    width: 540px;
+  }
+}
+
+@media (max-width: 575px) {
+  .u-section-2 .u-form-1 {
+    width: 340px;
+  }
+}

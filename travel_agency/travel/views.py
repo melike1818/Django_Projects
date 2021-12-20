@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.db import connection
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from .forms import registerForm
 # Create your views here.
 def index(request):
     return render(request, 'travel/index.html')
@@ -27,3 +29,31 @@ def my_profile(request):
 
 def login(request):
     return render(request, 'travel/Login.html')
+
+def register_c(request):
+    if request.method == 'POST':
+        post = request.POST
+        print('------------------------------')
+        print(post)
+        print('------------------------------')
+        return HttpResponse("congrats, you are signed up <a href='/'>Sign in</a>")
+    else:
+        return render(request, 'travel/Register_customer.html')
+
+def register(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = registerForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            cd = form.cleaned_data
+            #now in the object cd, you have the form as a dictionary.
+            name = cd.get('name')
+            username = cd.get('username')
+            print(name, username)
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = registerForm()
+
+    return render(request, 'travel/Register_customer.html', {'form': form})
