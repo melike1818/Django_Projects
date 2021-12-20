@@ -28,7 +28,24 @@ def my_profile(request):
     return render(request, 'travel/My-Profile.html', {'profile': r})
 
 def login(request):
-    return render(request, 'travel/Login.html')
+    if request.method == 'POST':
+        # get username and password from front-end
+        post = request.POST
+        username = request.POST.get("username", "")
+        password= request.POST.get("password", "")
+        print(username, password)
+        # check if user exists if exists and password is correct send to index, if not show a warning
+        stmt = "SELECT username, pw FROM general_user WHERE username = '" + username + "' AND pw = '" + password +"'"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchone()
+        # Question: Should remember the user after login but how?
+        if (r != None):
+            print("successful login")
+            return render(request, 'travel/index.html')
+        else:
+            print("user not found")
+            return render(request, 'travel/Login.html')
 
 def register_c(request):
     if request.method == 'POST':
