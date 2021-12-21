@@ -83,3 +83,6 @@ def register_c(request):
 def logout(request):
     request.session.flush()
     return HttpResponseRedirect("/")
+
+def statistics(request):
+    return render(request, 'travel/Statistics.html')
