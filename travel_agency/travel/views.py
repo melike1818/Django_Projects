@@ -35,42 +35,38 @@ def login(request):
         password= request.POST.get("password", "")
         print(username, password)
         # check if user exists if exists and password is correct send to index, if not show a warning
-        stmt = "SELECT username, pw FROM general_user WHERE username = '" + username + "' AND pw = '" + password +"'"
-        cursor = connection.cursor()
-        cursor.execute(stmt)
+        try:
+            stmt = "SELECT username, pw FROM customer WHERE username = '" + username + "' AND pw = '" + password +"'"
+            cursor = connection.cursor()
+            cursor.execute(stmt)
+        except:
+            print("db not exist")
+            return render(request, 'travel/Login.html')
+
         r = cursor.fetchone()
         # Question: Should remember the user after login but how?
         if (r != None):
             print("successful login")
-            return render(request, 'travel/index.html')
+            request.session['username'] = username
+            return HttpResponseRedirect("/")
         else:
             print("user not found")
             return render(request, 'travel/Login.html')
+    else:
+        return render(request, 'travel/Login.html')
+
 
 def register_c(request):
     if request.method == 'POST':
+        cursor = connection.cursor()
         post = request.POST
-        print('------------------------------')
-        print(post)
-        print('------------------------------')
-        return HttpResponse("congrats, you are signed up <a href='/'>Sign in</a>")
+        c_id = cursor.execute("SELECT COUNT(*) from customer")
+        parameters = [(c_id+1), request.POST.get("name", ""), request.POST.get("username", ""), request.POST.get("pw", ""), request.POST.get("c_bdate", ""), request.POST.get("address", ""), request.POST.get("c_sex", ""), 0, request.POST.get("phone", "")]
+        print(parameters)
+
+        cursor.execute("INSERT INTO customer VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", parameters)
+        connection.commit()
+        connection.close()
+        return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_customer.html')
-
-def register(request):
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = registerForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            cd = form.cleaned_data
-            #now in the object cd, you have the form as a dictionary.
-            name = cd.get('name')
-            username = cd.get('username')
-            print(name, username)
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = registerForm()
-
-    return render(request, 'travel/Register_customer.html', {'form': form})

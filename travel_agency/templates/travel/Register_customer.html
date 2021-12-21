@@ -33,32 +33,21 @@
         <h1 class="u-align-center u-text u-text-default u-text-palette-1-dark-1 u-title u-text-1" data-animation-name="" data-animation-duration="0" data-animation-direction="">Create Your Account</h1>
       </div>
       </section>
-      <!-- Sign up form -->
-      <div class="container">
-    		<div class="jumbotron">
-      <form method="POST" class="register-form" id="register-form">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
-</form>
-</div>
-</div>
-
-    <div class="container">
+ <div class="container">
   		<div class="jumbotron">
         <form method="POST" class="register-form" id="register-form">
           {% csrf_token %}
           <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" placeholder="Enter your name">
+            <input type="text" class="form-control" id="name" name=name placeholder="Enter your name">
           </div>
           <div class="form-group">
             <label for="username">User Name</label>
-            <input type="text" class="form-control" id="username" placeholder="Enter your user name">
+            <input type="text" class="form-control" id="username" name=username placeholder="Enter your user name">
           </div>
           <div class="form-group">
             <label for="gender">Gender</label>
-            <select class="form-control" id="gender">
+            <select class="form-control" id="gender" name=c_sex>
               <option>Female</option>
               <option>Male</option>
               <option>Other</option>
@@ -66,19 +55,19 @@
           </div>
           <div class="form-group">
             <label for="phone">Phone</label>
-            <input type="tel" class="form-control" pattern="\+?\d{0,3}[\s\(\-]?([0-9]{2,3})[\s\)\-]?([\s\-]?)([0-9]{3})[\s\-]?([0-9]{2})[\s\-]?([0-9]{2})" placeholder="Enter your phone (e.g. +905063993854)" id="phone">
+            <input type="tel" class="form-control" placeholder="Enter your phone (e.g. +905063993854)" id="phone" name=phone>
           </div>
           <div class="form-group">
             <label for="address">Address</label>
-            <input type="text" class="form-control" id="address" placeholder="Enter your address">
+            <input type="text" class="form-control" id="address" placeholder="Enter your address" name=address>
           </div>
           <div class="form-group">
             <label for="birthdate">Date of Birth</label>
-            <input type="date" class="form-control" name="birthdate" id="birthdate"/>
+            <input type="date" class="form-control" name="c_bdate" id="birthdate" />
           </div>
           <div class="form-group">
             <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+            <input type="password" class="form-control" id="exampleInputPassword1" name=pw placeholder="Password">
           </div>
           <div class="form-group form-button">
 							<input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
