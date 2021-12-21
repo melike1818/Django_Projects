@@ -21,7 +21,54 @@
 		"@type": "Organization",
 		"name": ""
 }</script>
-    <meta name="theme-color" content="#cf233d">
+ <meta name="theme-color" content="#cf233d">
+  <style>
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;  
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+</style>  <meta name="theme-color" content="#cf233d">
     <meta property="og:title" content="index">
     <meta property="og:type" content="website">
   </head>
@@ -43,16 +90,27 @@
 </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:hotels' %}" style="padding: 10px 20px;">Hotel Booking</a>
 </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:tours' %}" style="padding: 10px 20px;">Tour Reservation</a>
 </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:flight' %}" style="padding: 10px 20px;">Flight Booking</a>
-  {% if 'username' not in request.session %}
-  </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:register' %}"style="padding: 10px 20px;">Register</a>
-  </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:login' %}"style="padding: 10px 20px;">Login</a>
-{% else %}
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:previous' %}" style="padding: 10px 20px;">Previous Trips</a>
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:friends' %}" style="padding: 10px 20px;">Friends</a>
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:profile' %}"style="padding: 10px 20px;">Welcome {{ request.session.username}} </a>
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:logout' %}"style="padding: 10px 20px;">Sign Out </a>
-{% endif %}
+</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:flight' %}" style="padding: 10px 20px;">Statistics</a>
 </li></ul>
+<div class="dropdown u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
+      {% if 'username' not in request.session %}
+        <button class="dropbtn"style="padding: 10px 20px;">Sign In</button>
+        <div class="dropdown-content">
+      {% else %}
+        <button class="dropbtn"style="padding: 10px 20px;">{{request.session.username}}</button>
+        <div class="dropdown-content">
+      {% endif %}
+      {% if 'username' not in request.session %}
+        <a href="{% url 'travel:register' %}">Register</a>
+        <a href="{% url 'travel:login' %}">Login</a>
+      {% else %}
+        <a href="{% url 'travel:previous' %}">Previous Trips</a>
+        <a href="{% url 'travel:friends' %}">Friends</a>
+        <a href="{% url 'travel:profile' %}"> My Profile</a>
+        <a href="{% url 'travel:logout' %}">Sign Out </a>
+      {% endif %}
+  </div>
+</div>
           </div>
           <div class="u-custom-menu u-nav-container-collapse">
             <div class="u-align-center u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
@@ -61,16 +119,21 @@
 </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:hotels' %}"style="padding: 10px 20px;">Hotel Booking</a>
 </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:tours' %}" style="padding: 10px 20px;">Tour Reservation</a>
 </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:flight' %}"style="padding: 10px 20px;">Flight Booking</a>
-{% if 'username' not in request.session %}
-  </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:register' %}"style="padding: 10px 20px;">Register</a>
-  </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:login' %}"style="padding: 10px 20px;">Login</a>
-{% else %}
-  </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:previous' %}" style="padding: 10px 20px;">Previous Trips</a>
-  </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:friends' %}" style="padding: 10px 20px;">Friends</a>
-  </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:profile' %}"style="padding: 10px 20px;">Welcome {{ request.session.username}} </a>
-  </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:logout' %}"style="padding: 10px 20px;">Sign Out </a>
-{% endif %}
+</li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:flight' %}"style="padding: 10px 20px;">Statistics</a>
 </li></ul>
+<div class="dropdown u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
+  <button class="dropbtn"style="padding: 10px 20px;">{{request.session.username}}</button>
+  <div class="dropdown-content">
+    {% if 'username' not in request.session %}
+  <a href="{% url 'travel:register' %}">Register</a>
+  <a href="{% url 'travel:login' %}">Login</a>
+{% else %}
+  <a href="{% url 'travel:previous' %}">Previous Trips</a>
+  <a href="{% url 'travel:friends' %}">Friends</a>
+  <a href="{% url 'travel:profile' %}"> My Profile</a>
+  <a href="{% url 'travel:logout' %}">Sign Out </a>
+{% endif %}
+  </div>
               </div>
             </div>
             <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
