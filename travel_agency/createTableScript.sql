@@ -45,11 +45,11 @@ PRIMARY KEY (u_id));
 CREATE TABLE customer (u_id INT, 
 name CHAR(50),
 username CHAR(20),
+pw VARCHAR(50),
 c_bdate Date, 
 c_address VARCHAR(50), 
 c_sex CHAR(10), 
 c_wallet INT,
-pw NUMERIC(11,0),
 phone INT, 
 PRIMARY KEY (u_id));
 

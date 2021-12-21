@@ -4,6 +4,15 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import registerForm
 # Create your views here.
 def index(request):
+    if request.method == "POST":
+        post = request.POST
+        username = post["username"]
+        password = post["password"]
+        connection = sqlite3.connect('db.sqlite3')
+        cursor = connection.cursor()
+        if auth:
+            request.session['username'] = username
+        return HttpResponseRedirect("/")
     return render(request, 'travel/index.html')
 
 def hotel_booking(request):
@@ -70,3 +79,7 @@ def register_c(request):
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_customer.html')
+
+def logout(request):
+    request.session.flush()
+    return HttpResponseRedirect("/")
