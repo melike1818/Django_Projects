@@ -76,12 +76,8 @@ WSGI_APPLICATION = 'travel_agency.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'travel_agency',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': '55975513',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
