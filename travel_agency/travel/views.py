@@ -36,17 +36,19 @@ def my_profile(request):
     cursor.execute('SELECT * FROM customer')
     r = cursor.fetchone()
     return render(request, 'travel/My-Profile.html', {'profile': r})
-# TODO : check if user is a customer, employee or guide then send to the related url.
+# TODO: should change the navbar according to user type
 def login(request):
     if request.method == 'POST':
         # get username and password from front-end
         post = request.POST
         username = request.POST.get("username", "")
-        password= request.POST.get("password", "")
+        password = request.POST.get("password", "")
+        t = request.POST.get("type", "")
         print(username, password)
         # check if user exists if exists and password is correct send to index, if not show a warning
         try:
-            stmt = "SELECT username, pw FROM customer WHERE username = '" + username + "' AND pw = '" + password +"'"
+            stmt = "SELECT username, pw FROM " + t + " WHERE username = '" + username + "' AND pw = '" + password +"'"
+            print(stmt)
             cursor = connection.cursor()
             cursor.execute(stmt)
         except:
