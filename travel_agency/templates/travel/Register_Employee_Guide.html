@@ -7,7 +7,7 @@
     <meta name="keywords" content="Travel Agency">
     <meta name="description" content="">
     <meta name="page_type" content="np-template-header-footer-from-plugin">
-    <title>Register</title>
+    <title>Register( non-customers )</title>
     <link href="{% static 'css/nicepage.css' %}" rel="stylesheet" media="screen">
     <link href="{% static 'css/Register_customer.css' %}" rel="stylesheet" media="screen">
     <script class="u-script" type="text/javascript" src="{% static 'js/jquery.js' %}" defer=""></script>
@@ -46,33 +46,23 @@
             <input type="text" class="form-control" id="username" name=username placeholder="Enter your user name">
           </div>
           <div class="form-group">
-            <label for="gender">Gender</label>
-            <select class="form-control" id="gender" name=c_sex>
-              <option>Female</option>
-              <option>Male</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="form-group">
             <label for="phone">Phone</label>
             <input type="tel" class="form-control" placeholder="Enter your phone (e.g. +905063993854)" id="phone" name=phone>
-          </div>
-          <div class="form-group">
-            <label for="address">Address</label>
-            <input type="text" class="form-control" id="address" placeholder="Enter your address" name=address>
-          </div>
-          <div class="form-group">
-            <label for="birthdate">Date of Birth</label>
-            <input type="date" class="form-control" name="c_bdate" id="birthdate" />
           </div>
           <div class="form-group">
             <label for="exampleInputPassword1">Password</label>
             <input type="password" class="form-control" id="exampleInputPassword1" name=pw placeholder="Password">
           </div>
+          <div class="form-group">
+            <label for="gender">Status</label>
+            <select class="form-control" id="type" name=type>
+              <option>Employee</option>
+              <option>Guide</option>
+            </select>
+          </div>
           <div class="form-group form-button">
 							<input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
 					</div>
-          <a href="{% url 'travel:register_e_g' %}" class="u-border-1 u-border-active-palette-2-base u-border-hover-palette-1-base u-btn u-button-style u-login-control u-login-create-account u-none u-text-palette-1-base u-btn-2">Not a customer? Click here to register if you are an Employee or a Guide</a>
         </form>
       </div>
     </div>

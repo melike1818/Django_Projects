@@ -36,7 +36,7 @@ def my_profile(request):
     cursor.execute('SELECT * FROM customer')
     r = cursor.fetchone()
     return render(request, 'travel/My-Profile.html', {'profile': r})
-
+# TODO : check if user is a customer, employee or guide then send to the related url.
 def login(request):
     if request.method == 'POST':
         # get username and password from front-end
@@ -55,7 +55,6 @@ def login(request):
 
         r = cursor.fetchone()
         cursor.close()
-        # Question: Should remember the user after login but how?
         if (r != None):
             print("successful login")
             request.session['username'] = username
@@ -66,7 +65,7 @@ def login(request):
     else:
         return render(request, 'travel/Login.html')
 
-
+# Customer registration
 def register_c(request):
     if request.method == 'POST':
         cursor = connection.cursor()
@@ -84,6 +83,28 @@ def register_c(request):
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_customer.html')
+
+# Employee & Guide registration
+def register_e_g(request):
+    if request.method == 'POST':
+        post = request.POST
+        t = request.POST.get("type", "")
+        cursor = connection.cursor()
+        if(t == "Employee"):
+            e_id_o = cursor.execute("SELECT COUNT(*) from employee")
+            e_id = e_id_o.fetchone()[0]
+            stmt = "INSERT INTO 'employee'('u_id','name','username','phone','pw','e_salary') VALUES (" + str(e_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("phone", "")+"','"+ request.POST.get("pw", "")+"',0);"
+        else:
+            g_id_o = cursor.execute("SELECT COUNT(*) from guide")
+            g_id = g_id_o.fetchone()[0]
+            stmt = "INSERT INTO 'guide'('u_id','name','username','phone','pw','g_salary','g_points','g_rating') VALUES (" + str(g_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("phone", "")+"','"+ request.POST.get("pw", "")+"',0,0,0);"
+        cursor.execute(stmt)
+        cursor.close()
+        connection.commit()
+        connection.close()
+        return HttpResponseRedirect("/")
+    else:
+        return render(request, 'travel/Register_Employee_Guide.html')
 
 def logout(request):
     request.session.flush()
