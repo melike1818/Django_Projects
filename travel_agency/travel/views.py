@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import registerForm
+
 # Create your views here.
 def index(request):
     if request.method == "POST":
@@ -53,6 +54,7 @@ def login(request):
             return render(request, 'travel/Login.html')
 
         r = cursor.fetchone()
+        cursor.close()
         # Question: Should remember the user after login but how?
         if (r != None):
             print("successful login")
@@ -69,11 +71,14 @@ def register_c(request):
     if request.method == 'POST':
         cursor = connection.cursor()
         post = request.POST
-        c_id = cursor.execute("SELECT COUNT(*) from customer")
-        parameters = [(c_id+1), request.POST.get("name", ""), request.POST.get("username", ""), request.POST.get("pw", ""), request.POST.get("c_bdate", ""), request.POST.get("address", ""), request.POST.get("c_sex", ""), 0, request.POST.get("phone", "")]
+        c_id_o = cursor.execute("SELECT COUNT(*) from customer")
+        c_id = c_id_o.fetchone()[0]
+        parameters = [(c_id+1), request.POST.get("name", ""), request.POST.get("username", ""), request.POST.get("c_bdate", ""), request.POST.get("address", ""), request.POST.get("c_sex", ""),0, request.POST.get("pw", ""),  request.POST.get("phone", "")]
         print(parameters)
-
-        cursor.execute("INSERT INTO customer VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", parameters)
+        stmt = "INSERT INTO 'customer'('u_id','name','username','c_bdate','c_address','c_sex','c_wallet','pw','phone') VALUES (" + str(c_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("c_bdate", "")+"','"+ request.POST.get("address", "")+"','"+ request.POST.get("c_sex", "")+"', 0,'"+ request.POST.get("pw", "")+"','" + request.POST.get("phone", "")+"');"
+        print(stmt)
+        cursor.execute(stmt)
+        cursor.close()
         connection.commit()
         connection.close()
         return HttpResponseRedirect("/")
