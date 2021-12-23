@@ -13,11 +13,18 @@ def index(request):
         cursor = connection.cursor()
         if auth:
             request.session['username'] = username
+        cursor.close()
         return HttpResponseRedirect("/")
     return render(request, 'travel/index.html')
 
 def hotel_booking(request):
-    return render(request, 'travel/Hotel-Booking.html')
+    #TODO : should check the availibility
+    stmt = "SELECT * FROM hotel;"
+    cursor = connection.cursor()
+    cursor.execute(stmt)
+    r = cursor.fetchall()
+    cursor.close()
+    return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
 
 def tour_reservation(request):
     return render(request, 'travel/Tour-Reservation.html')
@@ -35,6 +42,7 @@ def my_profile(request):
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM customer')
     r = cursor.fetchone()
+    cursor.close()
     return render(request, 'travel/My-Profile.html', {'profile': r})
 # TODO: should change the navbar according to user type
 def login(request):
@@ -79,9 +87,8 @@ def register_c(request):
         stmt = "INSERT INTO 'customer'('u_id','name','username','c_bdate','c_address','c_sex','c_wallet','pw','phone') VALUES (" + str(c_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("c_bdate", "")+"','"+ request.POST.get("address", "")+"','"+ request.POST.get("c_sex", "")+"', 0,'"+ request.POST.get("pw", "")+"','" + request.POST.get("phone", "")+"');"
         print(stmt)
         cursor.execute(stmt)
-        cursor.close()
         connection.commit()
-        connection.close()
+        cursor.close()
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_customer.html')
@@ -114,3 +121,6 @@ def logout(request):
 
 def statistics(request):
     return render(request, 'travel/Statistics.html')
+
+
+
