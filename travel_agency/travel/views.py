@@ -82,12 +82,10 @@ def register_c(request):
         post = request.POST
         c_id_o = cursor.execute("SELECT COUNT(*) from customer")
         c_id = c_id_o.fetchone()[0]
-        parameters = [(c_id+1), request.POST.get("name", ""), request.POST.get("username", ""), request.POST.get("c_bdate", ""), request.POST.get("address", ""), request.POST.get("c_sex", ""),0, request.POST.get("pw", ""),  request.POST.get("phone", "")]
+        parameters = [str(c_id+1), request.POST.get("name", ""),request.POST.get("username", ""),request.POST.get("c_bdate", ""),request.POST.get("address", ""), request.POST.get("c_sex", ""), request.POST.get("pw", ""), request.POST.get("phone", "")]
         print(parameters)
-        stmt = "INSERT INTO 'customer'('u_id','name','username','c_bdate','c_address','c_sex','c_wallet','pw','phone') VALUES (" + str(c_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("c_bdate", "")+"','"+ request.POST.get("address", "")+"','"+ request.POST.get("c_sex", "")+"', 0,'"+ request.POST.get("pw", "")+"','" + request.POST.get("phone", "")+"');"
-        print(stmt)
-        cursor.execute(stmt)
-        cursor.close()
+
+        cursor.execute("INSERT INTO customer(u_id,name,username,c_bdate,c_address,c_sex,c_wallet,pw,phone) VALUES(%s,%s,%s,%s,%s,%s,0,%s,%s);", parameters)
         connection.commit()
         cursor.close()
         return HttpResponseRedirect("/")
