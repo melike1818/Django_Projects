@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="Travel Agency">
+    <meta name="description" content="">
+    <meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title>Register( non-customers )</title>
+    <link href="{% static 'css/nicepage.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'css/Register_customer.css' %}" rel="stylesheet" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'js/jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'js/nicepage.js' %}" defer=""></script>
+    <meta name="generator" content="Nicepage 4.2.6, nicepage.com">
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i|Merriweather:300,300i,400,400i,700,700i,900,900i">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": ""
+}</script>
+    <meta name="theme-color" content="#cf233d">
+    <meta property="og:title" content="Register_customer">
+    <meta property="og:type" content="website">
+  </head>
+  <body class="u-body">
+    <section class="u-clearfix u-section-1" id="sec-9889">
+      <div class="u-clearfix u-sheet u-sheet-1">
+        <h1 class="u-align-center u-text u-text-default u-text-palette-1-dark-1 u-title u-text-1" data-animation-name="" data-animation-duration="0" data-animation-direction="">Create Your Account</h1>
+      </div>
+      </section>
+ <div class="container">
+  		<div class="jumbotron">
+        <form method="POST" class="register-form" id="register-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name=name placeholder="Enter your name">
+          </div>
+          <div class="form-group">
+            <label for="username">User Name</label>
+            <input type="text" class="form-control" id="username" name=username placeholder="Enter your user name">
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" class="form-control" placeholder="Enter your phone (e.g. +905063993854)" id="phone" name=phone>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" name=pw placeholder="Password">
+          </div>
+          <div class="form-group">
+            <label for="gender">Status</label>
+            <select class="form-control" id="type" name=type>
+              <option>Employee</option>
+              <option>Guide</option>
+            </select>
+          </div>
+          <div class="form-group form-button">
+							<input type="submit" name="signup" id="signup" class="form-submit" value="Register"/>
+					</div>
+        </form>
+      </div>
+    </div>
+  </body>
+  <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-fe67"><div class="u-clearfix u-sheet u-sheet-1">
+      <p class="u-small-text u-text u-text-variant u-text-1"> © 2021 Girl Power. All rights reserved.</p>
+    </div></footer>
+</html>
