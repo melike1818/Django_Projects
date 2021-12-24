@@ -14,15 +14,19 @@
     <script class="u-script" type="text/javascript" src="{% static 'js/nicepage.js' %}" defer=""></script>
     <meta name="generator" content="Nicepage 4.2.6, nicepage.com">
     <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
-
-
+    <!-- table icin bootstrap cdn'i ama drop down menuyu bozuyor o yuzden commentte -->
+    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>-->
     <script type="application/ld+json">{
-		"@context": "http://schema.org",
-		"@type": "Organization",
-		"name": ""
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": ""
 }</script>
- <meta name="theme-color" content="#cf233d">
-  <style>
+    <meta name="theme-color" content="#cf233d">
+    <meta property="og:title" content="index">
+    <meta property="og:type" content="website">
+    <style type="text/css">
 .dropdown {
   float: left;
   overflow: hidden;
@@ -68,11 +72,9 @@
 .dropdown:hover .dropdown-content {
   display: block;
 }
-</style>  <meta name="theme-color" content="#cf233d">
-    <meta property="og:title" content="index">
-    <meta property="og:type" content="website">
+    </style>
   </head>
-  <body data-home-page="index.html" data-home-page-title="index" class="u-body"><header class="u-clearfix u-header" id="sec-2f6d"><div class="u-clearfix u-sheet u-sheet-1">
+ <body data-home-page="index.html" data-home-page-title="index" class="u-body"><header class="u-clearfix u-header" id="sec-2f6d"><div class="u-clearfix u-sheet u-sheet-1">
         <h2 class="u-align-center u-headline u-text u-text-palette-1-dark-1 u-text-1">
           <a href="/">Travel Agency</a>
         </h2>
@@ -121,6 +123,7 @@
 </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:flight' %}"style="padding: 10px 20px;">Flight Booking</a>
 </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:flight' %}"style="padding: 10px 20px;">Statistics</a>
 </li></ul>
+
 <div class="dropdown u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
   <button class="dropbtn"style="padding: 10px 20px;">{{request.session.username}}</button>
   <div class="dropdown-content">
@@ -153,5 +156,7 @@
     <footer class="u-align-center u-clearfix u-footer u-grey-80 u-footer" id="sec-fe67"><div class="u-clearfix u-sheet u-sheet-1">
         <p class="u-small-text u-text u-text-variant u-text-1"> © 2021 Girl Power. All rights reserved.</p>
       </div></footer>
+    {% block js %}
+    {% endblock js %}
   </body>
 </html>
