@@ -11,6 +11,7 @@ def index(request):
         password = post["password"]
         connection = sqlite3.connect('db.sqlite3')
         cursor = connection.cursor()
+
         if auth:
             request.session['username'] = username
         cursor.close()
@@ -55,7 +56,10 @@ def my_profile(request):
     r = cursor.fetchone()
     cursor.close()
     return render(request, 'travel/My-Profile.html', {'profile': r})
-# TODO: should change the navbar according to user type
+#Only for Employee
+def manage_reservations(request):
+    return render(request, 'travel/manage_reservations.html')
+
 def login(request):
     if request.method == 'POST':
         # get username and password from front-end
@@ -63,11 +67,9 @@ def login(request):
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
         t = request.POST.get("type", "")
-        print(username, password)
         # check if user exists if exists and password is correct send to index, if not show a warning
         try:
             stmt = "SELECT username, pw FROM " + t + " WHERE username = '" + username + "' AND pw = '" + password +"'"
-            print(stmt)
             cursor = connection.cursor()
             cursor.execute(stmt)
         except:
@@ -77,11 +79,10 @@ def login(request):
         r = cursor.fetchone()
         cursor.close()
         if (r != None):
-            print("successful login")
             request.session['username'] = username
+            request.session[t] = True
             return HttpResponseRedirect("/")
         else:
-            print("user not found")
             return render(request, 'travel/Login.html')
     else:
         return render(request, 'travel/Login.html')
@@ -94,7 +95,6 @@ def register_c(request):
         c_id_o = cursor.execute("SELECT COUNT(*) from customer")
         c_id = c_id_o.fetchone()[0]
         parameters = [str(c_id+1), request.POST.get("name", ""),request.POST.get("username", ""),request.POST.get("c_bdate", ""),request.POST.get("address", ""), request.POST.get("c_sex", ""), request.POST.get("pw", ""), request.POST.get("phone", "")]
-        print(parameters)
 
         cursor.execute("INSERT INTO customer(u_id,name,username,c_bdate,c_address,c_sex,c_wallet,pw,phone) VALUES(%s,%s,%s,%s,%s,%s,0,%s,%s);", parameters)
         connection.commit()
