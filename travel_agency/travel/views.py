@@ -18,13 +18,24 @@ def index(request):
     return render(request, 'travel/index.html')
 
 def hotel_booking(request):
-    #TODO : should check the availibility
-    stmt = "SELECT * FROM hotel;"
-    cursor = connection.cursor()
-    cursor.execute(stmt)
-    r = cursor.fetchall()
-    cursor.close()
-    return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
+    if request.method == "GET":
+        #TODO : should check the availibility
+        stmt = "SELECT * FROM hotel;"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
+    if request.method == "POST":
+        post = request.POST
+        check_in = post["check_in"]
+        check_out = post["check_out"]
+        location = post["location"]
+        rating = post["rating"]
+        people = post["number"]
+        print(check_in, check_out, location, rating, people)
+        # check the one that are not null and return the result
+        return render(request, 'travel/Hotel-Booking.html')
 
 def tour_reservation(request):
     return render(request, 'travel/Tour-Reservation.html')
