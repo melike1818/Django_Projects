@@ -60,7 +60,22 @@ def hotel_booking(request):
         return render(request, 'travel/Hotel-Booking.html')
 
 def tour_reservation(request):
-    return render(request, 'travel/Tour-Reservation.html')
+    if request.method == "GET":
+        stmt = "SELECT * FROM tour;"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Tour-Reservation.html', {'tours': r})
+    if request.method == "POST":
+        post = request.POST
+        startdate = post["startdate"]
+        enddate = post["enddate"]
+        location = post["location"]
+        people = post["people"]
+        stmt = "SELECT * FROM tour;"
+        #TODO filters
+        return render(request, 'travel/Tour-Reservation.html')
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
