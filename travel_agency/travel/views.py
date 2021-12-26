@@ -34,8 +34,29 @@ def hotel_booking(request):
         location = post["location"]
         rating = post["rating"]
         people = post["number"]
-        print(check_in, check_out, location, rating, people)
         # check the one that are not null and return the result
+        stmt = "SELECT * FROM hotel"
+        if(str(rating) != "Select Minimum Rating For Hotel" and location == ""):
+            print("by loc")
+            stmt1 ="SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ");"
+
+        if(location != "" and str(rating) == "Select Minimum Rating For Hotel") :
+            print("by rating")
+            stmt1 = "SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%';"
+
+        if(str(rating) != "Select Minimum Rating For Hotel" and location != ""):
+            print("by both")
+            stmt1 = "SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%');"
+        
+        if(str(rating) == "Select Minimum Rating For Hotel" and location == ""):
+            stmt1 = "SELECT * FROM hotel;"
+            print("by none")
+
+        cursor = connection.cursor()
+        cursor.execute(stmt1)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
         return render(request, 'travel/Hotel-Booking.html')
 
 def tour_reservation(request):
@@ -72,12 +93,13 @@ def login(request):
             stmt = "SELECT username, pw FROM " + t + " WHERE username = '" + username + "' AND pw = '" + password +"'"
             cursor = connection.cursor()
             cursor.execute(stmt)
+            r = cursor.fetchone()
+            cursor.close()
         except:
             print("db not exist")
             return render(request, 'travel/Login.html')
 
-        r = cursor.fetchone()
-        cursor.close()
+
         if (r != None):
             request.session['username'] = username
             request.session[t] = True
@@ -97,8 +119,9 @@ def register_c(request):
         parameters = [str(c_id+1), request.POST.get("name", ""),request.POST.get("username", ""),request.POST.get("c_bdate", ""),request.POST.get("address", ""), request.POST.get("c_sex", ""), request.POST.get("pw", ""), request.POST.get("phone", "")]
 
         cursor.execute("INSERT INTO customer(u_id,name,username,c_bdate,c_address,c_sex,c_wallet,pw,phone) VALUES(%s,%s,%s,%s,%s,%s,0,%s,%s);", parameters)
-        connection.commit()
         cursor.close()
+        connection.commit()
+
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_customer.html')
@@ -120,7 +143,6 @@ def register_e_g(request):
         cursor.execute(stmt)
         cursor.close()
         connection.commit()
-        connection.close()
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_Employee_Guide.html')
