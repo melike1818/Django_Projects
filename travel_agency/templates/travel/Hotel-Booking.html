@@ -47,20 +47,20 @@
 </style>
 <section class="u-clearfix u-section-1" id="sec-6b16">
   <div class="container">
-  <form action ="#"  method="post" novalidate="novalidate">
+  <form action ="#"  name = "search-form" onsubmit="return validateForm()" method="post" novalidate="novalidate">
     {% csrf_token %}
     <div class = "column">
       <div class = "row">
           <div class="col-sm-12 col-lg-12 p-0">
-             <input type="search" class="form-control search-slt" placeholder="Location" name="location" id="location">
+             <input type="search" class="form-control search-slt" placeholder="Location" name="location" id="location" required>
           </div>
       </div>
       <div class = "row">
         <div class="col-sm-4 col-lg-4 p-2">
-          <input type="date" class="form-control" name="check_in" id="check_in" />
+          <input type="date" class="form-control" name="check_in" id="check_in" required/>
         </div>
         <div class="col-sm-4 col-lg-4 p-2">
-            <input type="date" class="form-control" name="check_out" id="check_out" />
+            <input type="date" class="form-control" name="check_out" id="check_out" required />
         </div>
         <div class="col-sm-4 col-lg-4 p-0">
           <select class="form-control search-slt" name= "rating" id="exampleFormControlSelect1">
@@ -76,7 +76,7 @@
       <div class = "row">
           <div class="col-sm-5 col-lg-5 p-2 ">
             <label>Number of Guests</label>
-            <input type="number"  id="number" value="1" name="number">
+            <input type="number"  id="number" value="1" name="number" required>
           </div>
           <div class="col-sm-7 col-lg-7 p-0">
              <button type="submit" class="btn btn-danger wrn-btn">Search</button>
@@ -150,5 +150,25 @@
         }
         );
     } );
+    function validateForm() {
+
+      let check_in = document.forms["search-form"]["check_in"].value;
+      let check_out = document.forms["search-form"]["check_out"].value;
+      let people = document.forms["search-form"]["number"].value;
+      if (check_in == "") {
+        alert("Check in must be filled out");
+        return false;
+      }
+      if (check_out == "") {
+        alert("Check out must be filled out");
+        return false;
+      }
+      if (people == "") {
+        alert("Guest number in must be filled out");
+        return false;
+      }
+    }
+
+
     </script>
     {% endblock js %}

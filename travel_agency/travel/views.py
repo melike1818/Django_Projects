@@ -20,7 +20,6 @@ def index(request):
 
 def hotel_booking(request):
     if request.method == "GET":
-        #TODO : should check the availibility
         stmt = "SELECT * FROM hotel;"
         cursor = connection.cursor()
         cursor.execute(stmt)
@@ -34,30 +33,23 @@ def hotel_booking(request):
         location = post["location"]
         rating = post["rating"]
         people = post["number"]
-        # check the one that are not null and return the result
-        stmt = "SELECT * FROM hotel"
+
         if(str(rating) != "Select Minimum Rating For Hotel" and location == ""):
-            print("by loc")
             stmt1 ="SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ");"
 
         if(location != "" and str(rating) == "Select Minimum Rating For Hotel") :
-            print("by rating")
             stmt1 = "SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%';"
 
         if(str(rating) != "Select Minimum Rating For Hotel" and location != ""):
-            print("by both")
             stmt1 = "SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%');"
         
         if(str(rating) == "Select Minimum Rating For Hotel" and location == ""):
-            stmt1 = "SELECT * FROM hotel;"
-            print("by none")
-
+            stmt1 = "SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN (SELECT h_id FROM book_room) AND h_capacity >= "+ people+";"
         cursor = connection.cursor()
         cursor.execute(stmt1)
         r = cursor.fetchall()
         cursor.close()
         return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
-        return render(request, 'travel/Hotel-Booking.html')
 
 def tour_reservation(request):
     if request.method == "GET":
