@@ -1,10 +1,148 @@
 {% extends "travel/base.html" %}
 {% block body_block %}
 
-<div class="container">
-  <div class="jumbotron">
-    <h1>This is tour reservation</h1>
-  </div>
-</div>
+<style type="text/css">
+  .th-sm{
+    background: white;
+  }
+	.search-sec{
+    padding: 2rem;
+	}
+  .container{
+    padding: 2rem;
+	}
+	.search-slt{
+	    display: block;
+	    width: 100%;
+	    font-size: 0.875rem;
+	    line-height: 1.5;
+	    color: #55595c;
+	    background-color: #fff;
+	    background-image: none;
+	    border: 1px solid #ccc;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	.wrn-btn{
+	    width: 100%;
+	    font-size: 16px;
+	    font-weight: 400;
+	    text-transform: capitalize;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	@media (min-width: 992px){
+	    .search-sec{
+	        position: relative;
+	        top: -114px;
+	        background: rgba(26, 70, 104, 0.51);
+	    }
+	}
 
+	@media (max-width: 992px){
+	    .search-sec{
+	        background: #1A4668;
+	    }
+	}
+</style>
+
+<section class="u-clearfix u-section-1" id="sec-6b16">
+  <div class="container">
+
+    <form action ="#"  method="post" novalidate="novalidate">
+      {% csrf_token %}
+      <div class = "column">
+        <div class = "row">
+            <div class="col-sm-4 col-lg-4 p-2">
+               <input type="search" class="form-control search-slt" placeholder="Location" name="location" id="location">
+            </div>
+            <div class="col-sm-4 col-lg-4 p-2">
+              <input type="search" class="form-control search-slt" placeholder="Description key word" name="desc" id="desc">
+           </div>
+        </div>
+        <div class = "row">
+          <div class="col-sm-4 col-lg-4 p-2">
+            <label for="startdate">Start Date: </label>
+            <input type="date" class="form-control" name="startdate" id="startdate" />
+          </div>
+          <div class="col-sm-4 col-lg-4 p-2">
+            <label for="enddate">End Date: </label>
+            <input type="date" class="form-control" name="enddate" id="enddate" />
+          </div>
+          <div class="col-sm-4 col-lg-4 p-0">
+            <div class="human-select">
+              <button type="button" id="closable-wrapper" class="close" aria-label="Close">
+                <label> Number of people:</label> 
+                <select name="people" id="people" class="people-count"> 
+                  <option value="1">1</option> 
+                  <option value="2" selected="">2 </option> 
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option> 
+                  <option value="6">6</option>
+                </select>
+            </div>
+          </div>
+        </div>
+        <div class = "row">
+            <div class="col-sm-7 col-lg-7 p-0">
+               <button type="submit" class="btn btn-danger wrn-btn">Search</button>
+            </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="u-clearfix u-section-1" id="sec-6b16">
+  <div class="container">
+    <table id="tours" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+    <thead>
+      <tr>
+        <th class="th-sm">Tour Location
+        </th>
+        <th class="th-sm">Description
+        </th>
+        <th class="th-sm">Price
+        </th>
+        <th class="th-sm">Details
+        </th>
+      </tr>
+    </thead>
+
+    {% for tour in tours %}
+    <tbody>
+      <tr>
+     	  {% for value in tour %}
+        <td class="th-sm">{{value}}</td>
+        {% endfor %}
+        <td class="th-sm">
+	  	<button type="button" class="btn btn-dark">Check Details</button>
+        </td>
+      </tr>
+    </tbody>
+    {% endfor %}
+
+    </table>
+  </div>
+</section>
 {% endblock %}
+
+{{% block js %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script>
+    $(document).ready(function () {
+    $('#hotel-table').DataTable( {
+        "paging": true,
+        "searching": true,
+        "autoWidth": false,
+        "ordering": true,
+        "columnDefs": [
+            {"width": "50px", "targets": 0},
+            {"width": "250px", "targets": 1},
+        ],
+    }
+    );
+} );
+</script>
+{% endblock js %}
