@@ -86,7 +86,10 @@ def my_profile(request):
     return render(request, 'travel/My-Profile.html', {'profile': r})
 #Only for Employee
 def manage_reservations(request):
-    return render(request, 'travel/manage_reservations.html')
+    if request.method == "GET":
+        return render(request, 'travel/manage_reservations.html')
+    if request.method == "POST":
+        return render(request, 'travel/manage_reservations.html')
 
 def login(request):
     if request.method == 'POST':
