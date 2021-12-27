@@ -42,7 +42,11 @@ def hotel_booking(request):
 
         if(str(rating) != "Select Minimum Rating For Hotel" and location != ""):
             stmt1 = "SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%');"
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> b899aeaf19ca0ef9f6f16827217c64c6ff677c6d
         if(str(rating) == "Select Minimum Rating For Hotel" and location == ""):
             stmt1 = "SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
         cursor = connection.cursor()
