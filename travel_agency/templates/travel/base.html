@@ -16,10 +16,6 @@
     <script class="u-script" type="text/javascript" src="{% static 'js/nicepage.js' %}" defer=""></script>
     <meta name="generator" content="Nicepage 4.2.6, nicepage.com">
     <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
-    <!-- table icin bootstrap cdn'i ama drop down menuyu bozuyor o yuzden commentte -->
-    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>-->
     <script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "Organization",
@@ -29,12 +25,12 @@
     <meta property="og:title" content="index">
     <meta property="og:type" content="website">
     <style type="text/css">
-.dropdown {
+.dropdownn {
   float: left;
   overflow: hidden;
 }
 
-.dropdown .dropbtn {
+.dropdownn .dropbtn {
   font-size: 16px;
   border: none;
   outline: none;
@@ -45,11 +41,11 @@
   margin: 0;
 }
 
-.navbar a:hover, .dropdown:hover .dropbtn {
+.navbar a:hover, .dropdownn:hover .dropbtn {
   background-color: red;
 }
 
-.dropdown-content {
+.dropdownn-content {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
@@ -58,7 +54,7 @@
   z-index: 1;
 }
 
-.dropdown-content a {
+.dropdownn-content a {
   float: none;
   color: black;
   padding: 12px 16px;
@@ -67,11 +63,11 @@
   text-align: left;
 }
 
-.dropdown-content a:hover {
+.dropdownn-content a:hover {
   background-color: #ddd;
 }
 
-.dropdown:hover .dropdown-content {
+.dropdownn:hover .dropdownn-content {
   display: block;
 }
     </style>
@@ -79,9 +75,10 @@
  <body data-home-page="index.html" data-home-page-title="index" class="u-body"><header class="u-clearfix u-header" id="sec-2f6d"><div class="u-clearfix u-sheet u-sheet-1">
         <h2 class="u-align-center u-headline u-text u-text-palette-1-dark-1 u-text-1">
           <a href="/">Travel Agency</a>
+          {{request.session.type}}
         </h2>
         <div class="u-align-left u-border-1 u-border-grey-15 u-expanded-width u-line u-line-horizontal u-line-1"></div>
-        <nav class="u-align-left u-menu u-menu-dropdown u-offcanvas u-menu-1">
+        <nav class="u-align-left u-menu u-menu-dropdownn u-offcanvas u-menu-1">
           <div class="menu-collapse" style="font-size: 1rem; letter-spacing: 0px; font-weight: 600;">
             <a class="u-button-style u-custom-active-color u-custom-border u-custom-border-color u-custom-color u-custom-hover-color u-custom-left-right-menu-spacing u-custom-text-active-color u-custom-text-color u-custom-text-hover-color u-custom-top-bottom-menu-spacing u-nav-link" href="#">
               <svg class="u-svg-link" preserveAspectRatio="xMidYMin slice" viewBox="0 0 302 302" style=""><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#svg-622f"></use></svg>
@@ -90,31 +87,51 @@
             </a>
           </div>
           <div class="u-custom-menu u-nav-container">
+            {% if 'Customer' in request.session %}
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:hotels' %}" style="padding: 10px 20px;">Hotel Booking</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:tours' %}" style="padding: 10px 20px;">Tour Reservation</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:flight' %}" style="padding: 10px 20px;">Flight Booking</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:statistics' %}" style="padding: 10px 20px;">Statistics</a>
+              </li></ul>
+            {% endif %}
+            {% if 'Employee' in request.session %}
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:hotels' %}" style="padding: 10px 20px;">Hotel Booking</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:tours' %}" style="padding: 10px 20px;">Tour Reservation</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:flight' %}" style="padding: 10px 20px;">Flight Booking</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:statistics' %}" style="padding: 10px 20px;">Statistics</a>
+              </li></ul>
+            {% endif %}
+            {% if 'Guide' in request.session %}
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:hotels' %}" style="padding: 10px 20px;">Tours</a>
+              </li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:tours' %}" style="padding: 10px 20px;">Previous Trips</a>
+              </li></ul>
+            {% endif %}
 
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:hotels' %}" style="padding: 10px 20px;">Hotel Booking</a>
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:tours' %}" style="padding: 10px 20px;">Tour Reservation</a>
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:flight' %}" style="padding: 10px 20px;">Flight Booking</a>
-</li><li class="u-nav-item"><a class="u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base" href="{% url 'travel:statistics' %}" style="padding: 10px 20px;">Statistics</a>
-</li></ul>
-<div class="dropdown u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
-      {% if 'username' not in request.session %}
-        <button class="dropbtn"style="padding: 10px 20px;">Sign In</button>
-        <div class="dropdown-content">
-      {% else %}
-        <button class="dropbtn"style="padding: 10px 20px;">{{request.session.username}}</button>
-        <div class="dropdown-content">
-      {% endif %}
-      {% if 'username' not in request.session %}
-        <a href="{% url 'travel:register' %}">Register</a>
-        <a href="{% url 'travel:login' %}">Login</a>
-      {% else %}
-        <a href="{% url 'travel:previous' %}">Previous Trips</a>
-        <a href="{% url 'travel:friends' %}">Friends</a>
-        <a href="{% url 'travel:profile' %}"> My Profile</a>
-        <a href="{% url 'travel:logout' %}">Sign Out </a>
-      {% endif %}
-  </div>
-</div>
+
+          <div class="dropdownn u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
+                {% if 'username' not in request.session %}
+                  <button class="dropbtn"style="padding: 10px 20px;">Sign In</button>
+                  <div class="dropdownn-content">
+                {% else %}
+                  <button class="dropbtn"style="padding: 10px 20px;">{{request.session.username}}</button>
+                  <div class="dropdownn-content">
+                {% endif %}
+                {% if 'username' not in request.session %}
+                  <a href="{% url 'travel:register' %}">Register</a>
+                  <a href="{% url 'travel:login' %}">Login</a>
+                {% else %}
+                  {% if 'Customer' in request.session %}
+                    <a href="{% url 'travel:previous' %}">Previous Trips</a>
+                    <a href="{% url 'travel:friends' %}">Friends</a>
+                  {% endif %}
+                  {% if 'Employee' in request.session%}
+                    <a href="{% url 'travel:manage_reservations' %}">Manage Reservations</a>
+                  {% endif %}
+                    <a href="{% url 'travel:profile' %}"> My Profile</a>
+                    <a href="{% url 'travel:logout' %}">Sign Out </a>
+                {% endif %}
+                  </div>
+                  </div>
           </div>
           <div class="u-custom-menu u-nav-container-collapse">
             <div class="u-align-center u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
@@ -126,9 +143,9 @@
 </li><li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'travel:flight' %}"style="padding: 10px 20px;">Statistics</a>
 </li></ul>
 
-<div class="dropdown u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
+<div class="dropdownn u-button-style u-hover-grey-10 u-nav-link u-palette-5-base u-text-active-grey-90 u-text-hover-grey-90 u-text-palette-1-base">
   <button class="dropbtn"style="padding: 10px 20px;">{{request.session.username}}</button>
-  <div class="dropdown-content">
+  <div class="dropdownn-content">
     {% if 'username' not in request.session %}
   <a href="{% url 'travel:register' %}">Register</a>
   <a href="{% url 'travel:login' %}">Login</a>

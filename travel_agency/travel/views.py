@@ -11,6 +11,7 @@ def index(request):
         password = post["password"]
         connection = sqlite3.connect('db.sqlite3')
         cursor = connection.cursor()
+
         if auth:
             request.session['username'] = username
         cursor.close()
@@ -18,16 +19,55 @@ def index(request):
     return render(request, 'travel/index.html')
 
 def hotel_booking(request):
-    #TODO : should check the availibility
-    stmt = "SELECT * FROM hotel;"
-    cursor = connection.cursor()
-    cursor.execute(stmt)
-    r = cursor.fetchall()
-    cursor.close()
-    return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
+    if request.method == "GET":
+        stmt = "SELECT * FROM hotel;"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
+    if request.method == "POST":
+        post = request.POST
+        check_in = post["check_in"]
+        check_out = post["check_out"]
+        location = post["location"]
+        rating = post["rating"]
+        people = post["number"]
+
+        if(str(rating) != "Select Minimum Rating For Hotel" and location == ""):
+            stmt1 ="SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ");"
+
+        if(location != "" and str(rating) == "Select Minimum Rating For Hotel") :
+            stmt1 = "SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%';"
+
+        if(str(rating) != "Select Minimum Rating For Hotel" and location != ""):
+            stmt1 = "SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%');"
+
+        if(str(rating) == "Select Minimum Rating For Hotel" and location == ""):
+            stmt1 = "SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
+        cursor = connection.cursor()
+        cursor.execute(stmt1)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
 
 def tour_reservation(request):
-    return render(request, 'travel/Tour-Reservation.html')
+    if request.method == "GET":
+        stmt = "SELECT * FROM tour;"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Tour-Reservation.html', {'tours': r})
+    if request.method == "POST":
+        post = request.POST
+        startdate = post["startdate"]
+        enddate = post["enddate"]
+        location = post["location"]
+        people = post["people"]
+        stmt = "SELECT * FROM tour;"
+        #TODO filters
+        return render(request, 'travel/Tour-Reservation.html')
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
@@ -44,7 +84,13 @@ def my_profile(request):
     r = cursor.fetchone()
     cursor.close()
     return render(request, 'travel/My-Profile.html', {'profile': r})
-# TODO: should change the navbar according to user type
+#Only for Employee
+def manage_reservations(request):
+    if request.method == "GET":
+        return render(request, 'travel/manage_reservations.html')
+    if request.method == "POST":
+        return render(request, 'travel/manage_reservations.html')
+
 def login(request):
     if request.method == 'POST':
         # get username and password from front-end
@@ -52,25 +98,23 @@ def login(request):
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
         t = request.POST.get("type", "")
-        print(username, password)
         # check if user exists if exists and password is correct send to index, if not show a warning
         try:
             stmt = "SELECT username, pw FROM " + t + " WHERE username = '" + username + "' AND pw = '" + password +"'"
-            print(stmt)
             cursor = connection.cursor()
             cursor.execute(stmt)
+            r = cursor.fetchone()
+            cursor.close()
         except:
             print("db not exist")
             return render(request, 'travel/Login.html')
 
-        r = cursor.fetchone()
-        cursor.close()
+
         if (r != None):
-            print("successful login")
             request.session['username'] = username
+            request.session[t] = True
             return HttpResponseRedirect("/")
         else:
-            print("user not found")
             return render(request, 'travel/Login.html')
     else:
         return render(request, 'travel/Login.html')
@@ -83,11 +127,11 @@ def register_c(request):
         c_id_o = cursor.execute("SELECT COUNT(*) from customer")
         c_id = c_id_o.fetchone()[0]
         parameters = [str(c_id+1), request.POST.get("name", ""),request.POST.get("username", ""),request.POST.get("c_bdate", ""),request.POST.get("address", ""), request.POST.get("c_sex", ""), request.POST.get("pw", ""), request.POST.get("phone", "")]
-        print(parameters)
 
         cursor.execute("INSERT INTO customer(u_id,name,username,c_bdate,c_address,c_sex,c_wallet,pw,phone) VALUES(%s,%s,%s,%s,%s,%s,0,%s,%s);", parameters)
-        connection.commit()
         cursor.close()
+        connection.commit()
+
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_customer.html')
@@ -109,7 +153,6 @@ def register_e_g(request):
         cursor.execute(stmt)
         cursor.close()
         connection.commit()
-        connection.close()
         return HttpResponseRedirect("/")
     else:
         return render(request, 'travel/Register_Employee_Guide.html')

@@ -47,35 +47,47 @@
 </style>
 <section class="u-clearfix u-section-1" id="sec-6b16">
   <div class="container">
-        <form action="#" method="post" novalidate="novalidate">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-3 col-sm-12 p-0">
-                            <input type="text" class="form-control search-slt" placeholder="Enter Pickup City">
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12 p-0">
-                            <input type="text" class="form-control search-slt" placeholder="Enter Drop City">
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12 p-0">
-                            <select class="form-control search-slt" id="exampleFormControlSelect1">
-                                <option>Select Vehicle</option>
-                                <option>Example one</option>
-                                <option>Example one</option>
-                                <option>Example one</option>
-                                <option>Example one</option>
-                                <option>Example one</option>
-                                <option>Example one</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-12 p-0">
-                            <button type="button" class="btn btn-danger wrn-btn">Search</button>
-                        </div>
-                    </div>
-                </div>
-        </form>
-</div>
-<div class="container">
+  <form action ="#"  name = "search-form" onsubmit="return validateForm()" method="post" novalidate="novalidate">
+    {% csrf_token %}
+    <div class = "column">
+      <div class = "row">
+          <div class="col-sm-12 col-lg-12 p-0">
+             <input type="search" class="form-control search-slt" placeholder="Location" name="location" id="location" required>
+          </div>
+      </div>
+      <div class = "row">
+        <div class="col-sm-4 col-lg-4 p-2">
+          <input type="date" class="form-control" name="check_in" id="check_in" required/>
+        </div>
+        <div class="col-sm-4 col-lg-4 p-2">
+            <input type="date" class="form-control" name="check_out" id="check_out" required />
+        </div>
+        <div class="col-sm-4 col-lg-4 p-0">
+          <select class="form-control search-slt" name= "rating" id="exampleFormControlSelect1">
+            <option>Select Minimum Rating For Hotel</option>
+            <option>1</option>
+             <option>2</option>
+             <option>3</option>
+             <option>4</option>
+             <option>5</option>
+          </select>
+        </div>
+      </div>
+      <div class = "row">
+          <div class="col-sm-5 col-lg-5 p-2 ">
+            <label>Number of Guests</label>
+            <input type="number"  id="number" value="1" name="number" required>
+          </div>
+          <div class="col-sm-7 col-lg-7 p-0">
+             <button type="submit" class="btn btn-danger wrn-btn">Search</button>
+          </div>
+      </div>
+    </div>
+  </form>
+  </div>
+</section>
+<section class="u-clearfix u-section-1" id="sec-6b16">
+  <div class="container">
   <table id="hotel-table" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
   <thead>
     <tr>
@@ -119,10 +131,7 @@
 {% endblock %}
 
 {{% block js %}
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -138,5 +147,25 @@
         }
         );
     } );
+    function validateForm() {
+
+      let check_in = document.forms["search-form"]["check_in"].value;
+      let check_out = document.forms["search-form"]["check_out"].value;
+      let people = document.forms["search-form"]["number"].value;
+      if (check_in == "") {
+        alert("Check in must be filled out");
+        return false;
+      }
+      if (check_out == "") {
+        alert("Check out must be filled out");
+        return false;
+      }
+      if (people == "") {
+        alert("Guest number in must be filled out");
+        return false;
+      }
+    }
+
+
     </script>
     {% endblock js %}
