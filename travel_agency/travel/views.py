@@ -104,16 +104,32 @@ def my_profile(request):
     r = cursor.fetchone()
     cursor.close()
     return render(request, 'travel/My-Profile.html', {'profile': r})
+
 #Only for Employee
 def manage_reservations(request):
     if request.method == "GET":
-        # Display all
-        return render(request, 'travel/manage_reservations.html')
+        stmt = "SELECT * FROM book_room"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        print(r)
+        return render(request, 'travel/manage_reservations.html', {'reservations': r})  
     if request.method == "POST":
+        # TODO: 
         # search reservation by code and customer name
         # reservation by start and end date 
         # search by rating
         return render(request, 'travel/manage_reservations.html')
+
+def update_booking(request, pk):
+        # TODO: set is accepted, edit dates etc.
+        res = request.POST.get('res', False)
+        print(res)
+        context = {
+        'news':'asfasf',
+        }
+        return render(request, 'travel/update_booking.html', context)
 
 def login(request):
     if request.method == 'POST':

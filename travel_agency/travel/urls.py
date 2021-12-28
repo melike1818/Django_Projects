@@ -10,6 +10,7 @@ urlpatterns = [
     path('previous/', views.previous_trips, name = 'previous'),
     path('friends/', views.friends, name = 'friends'),
     path('manage_reservations/', views.manage_reservations, name = 'manage_reservations'),
+    path('manage_reservations/<int:pk>', views.update_booking, name = 'update_booking'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),
     path('register/', views.register_c, name = 'register'),

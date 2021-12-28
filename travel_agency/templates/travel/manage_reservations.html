@@ -94,13 +94,29 @@
       <th class="th-sm">Reservation Code
 
       </th>
-      <th class="th-sm">Date
+      <th class="th-sm">Hotel ID
 
       </th>
-      <th class="th-sm">Rating
+      <th class="th-sm">Start Date
 
       </th>
-      <th class="th-sm">Customer
+
+      <th class="th-sm">End Date
+
+      </th>
+      <th class="th-sm">Customer ID
+
+      </th>
+      <th class="th-sm">Employee ID
+
+      </th>
+      <th class="th-sm">Room Number
+
+      </th>
+      <th class="th-sm">Status
+
+      </th>
+      <th class="th-sm">Comment
 
       </th>
       <th class="th-sm">Detail
@@ -110,6 +126,25 @@
     </tr>
   </thead>
   <!--Display data -->
+  {% for res in reservations %}
+  <tbody>
+    <tr>
+   	  {% for value in res %}
+   	  	{% if value != None%}
+      		<td class="th-sm">{{value}}</td>
+   	  	{% else %}
+   	  		<td class="th-sm">Unknown</td>
+   	  	{% endif %}
+      {% endfor %}
+      <td class="th-sm">
+      	<form action="{% url 'travel:update_booking' res.0 %}" method = "POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-dark">Edit</button>                    
+        </form>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
 </table>
 </div>
 </section>
