@@ -33,22 +33,21 @@ def hotel_booking(request):
         location = post["location"]
         rating = post["rating"]
         people = post["number"]
-
+        # Filter by rating
         if(str(rating) != "Select Minimum Rating For Hotel" and location == ""):
-            stmt1 ="SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ");"
+            stmt1 ="SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+");"
 
+        # Filter by location and availibility
         if(location != "" and str(rating) == "Select Minimum Rating For Hotel") :
-            stmt1 = "SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%';"
+            stmt1 = "SELECT * FROM (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%') INNER NATURAL JOIN (SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+");"
 
+        # Filter by location and rating and availibility
         if(str(rating) != "Select Minimum Rating For Hotel" and location != ""):
-            stmt1 = "SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%');"
-<<<<<<< HEAD
-
-=======
+            stmt1 = "SELECT * FROM (SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%')) INNER NATURAL JOIN (SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+ ");"
         
->>>>>>> b899aeaf19ca0ef9f6f16827217c64c6ff677c6d
+        # only by availibility
         if(str(rating) == "Select Minimum Rating For Hotel" and location == ""):
-            stmt1 = "SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
+            stmt1 = "SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
         cursor = connection.cursor()
         cursor.execute(stmt1)
         r = cursor.fetchall()
@@ -57,7 +56,7 @@ def hotel_booking(request):
 
 def tour_reservation(request):
     if request.method == "GET":
-        stmt = "SELECT t_start_location, t_description, t_price FROM tour;"
+        stmt = "SELECT t_start_location, t_description, t_price FROM tour;"        
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
@@ -71,7 +70,6 @@ def tour_reservation(request):
         desc = post["desc"]
         people = post["people"]
         stmt2 = "SELECT t_start_location, t_description, t_price FROM tour;"
-        print("first: " + startdate + enddate + desc + location)
         if(startdate == None):
             startdate = "'2021-12-25'"
             
@@ -81,16 +79,15 @@ def tour_reservation(request):
         if(desc == None):
             desc = ' '
             
-        print("last: " + startdate + enddate + desc + location)
         if(location == None):
-            stmt2 = 'SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= ' + startdate + ' and t_end_date <= ' + enddate + ' and t_capacity >= ' + people + ' and t_description like “%' + desc + '%”'
+            stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
-            stmt2 = 'SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= ' + startdate + ' and t_end_date <= ' + enddate + ' and t_capacity >= ' + people + ' and t_start_location == ' + location + ' and t_description like “%' + desc + '%”'
+            stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'"
         cursor = connection.cursor()
         cursor.execute(stmt2)
         r = cursor.fetchall()
         cursor.close()
-        return render(request, 'travel/Tour-Reservation.html', {'tours': r})    
+        return render(request, 'travel/Tour-Reservation.html', {'tours': r})   
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
@@ -110,8 +107,12 @@ def my_profile(request):
 #Only for Employee
 def manage_reservations(request):
     if request.method == "GET":
+        # Display all
         return render(request, 'travel/manage_reservations.html')
     if request.method == "POST":
+        # search reservation by code and customer name
+        # reservation by start and end date 
+        # search by rating
         return render(request, 'travel/manage_reservations.html')
 
 def login(request):
