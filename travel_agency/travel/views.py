@@ -1,3 +1,6 @@
+import sqlite3
+
+from django.contrib.auth.context_processors import auth
 from django.shortcuts import render
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -56,7 +59,10 @@ def hotel_booking(request):
 
 def tour_reservation(request):
     if request.method == "GET":
-        stmt = "SELECT t_start_location, t_description, t_price FROM tour;"        
+
+        #stmt = "SELECT t_start_location, t_description, t_price  FROM tour; "
+        stmt = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id != a.t_id; "
+
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
@@ -69,7 +75,9 @@ def tour_reservation(request):
         location = post["location"]
         desc = post["desc"]
         people = post["people"]
-        stmt2 = "SELECT t_start_location, t_description, t_price FROM tour;"
+        #guide = post["guide"]
+        #stmt2 = "SELECT t_start_location, t_description, t_price  FROM tour; "
+        stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id; "
         if(startdate == None):
             startdate = "'2021-12-25'"
             
@@ -78,16 +86,28 @@ def tour_reservation(request):
         
         if(desc == None):
             desc = ' '
-            
         if(location == None):
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'"
+        #Filter by Guide
+        #if(str(guide) != "All"):
+            #stmt2 = "SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id LIKE '%" + guide + "%'"
+
         cursor = connection.cursor()
         cursor.execute(stmt2)
         r = cursor.fetchall()
         cursor.close()
-        return render(request, 'travel/Tour-Reservation.html', {'tours': r})   
+        return render(request, 'travel/Tour-Reservation.html', {'tours': r})
+
+def assign_guide(request, pk):
+    # TODO: set is accepted, edit dates etc.
+    res = request.POST.get('res', False)
+    print(res)
+    context = {
+        'news':'asfasf',
+    }
+    return render(request, 'travel/assign_guide.html', context)
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')

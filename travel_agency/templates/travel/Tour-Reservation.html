@@ -59,6 +59,20 @@
             <div class="col-sm-4 col-lg-4 p-2">
               <input type="search" class="form-control search-slt" placeholder="Description key word" name="desc" id="desc">
            </div>
+            <div class="col-sm-4 col-lg-4 p-0">
+                <div class="human-select">
+                    <button type="button" id="closable-wrapper" class="close" aria-label="Close">
+                        <label> Number of people:</label>
+                        <select name="people" id="people" class="people-count">
+                            <option value="1">1</option>
+                            <option value="2" selected="">2 </option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                </div>
+            </div>
         </div>
         <div class = "row">
           <div class="col-sm-4 col-lg-4 p-2">
@@ -70,18 +84,17 @@
             <input type="date" class="form-control" name="enddate" id="enddate" />
           </div>
           <div class="col-sm-4 col-lg-4 p-0">
+          {% if 'Employee' in request.session %}
             <div class="human-select">
               <button type="button" id="closable-wrapper" class="close" aria-label="Close">
-                <label> Number of people:</label> 
-                <select name="people" id="people" class="people-count"> 
-                  <option value="1">1</option> 
-                  <option value="2" selected="">2 </option> 
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option> 
-                  <option value="6">6</option>
+                <label> Guide:</label>
+                <select name="people" id="people" class="people-count">
+                    <option value="All"selected="">All</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="Unassigned">Unassigned </option>
                 </select>
             </div>
+            {% endif %}
           </div>
         </div>
         <div class = "row">
@@ -105,23 +118,47 @@
         </th>
         <th class="th-sm">Price
         </th>
+        <th class="th-sm">Guide
+        </th>
         <th class="th-sm">Details
         </th>
       </tr>
     </thead>
-
+    {% if 'Customer' in request.session %}
     {% for tour in tours %}
     <tbody>
       <tr>
-     	  {% for value in tour %}
-        <td class="th-sm">{{value}}</td>
-        {% endfor %}
+          {% for value in tour %}
+              <td class="th-sm">{{value}}</td>
+          {% endfor %}
         <td class="th-sm">
-	  	<button type="button" class="btn btn-dark">Check Details</button>
+        <button type="button" class="btn btn-dark">Check Details</button>
         </td>
       </tr>
     </tbody>
     {% endfor %}
+    {% else %}
+    {% if 'Employee' in request.session %}
+            {% for tour in tours %}
+                <tbody>
+                <tr>
+                    {% for value in tour %}
+                        {% if value %}
+                            <td class="th-sm">{{value}}</td>
+                        {% else %}
+                            <td class="th-sm">
+                                <button type="submit" class="btn btn-dark">Assign Guide</button>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                    <td class="th-sm">
+                        <button type="button" class="btn btn-dark">Check Details</button>
+                    </td>
+                </tr>
+                </tbody>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
 
     </table>
   </div>
