@@ -70,16 +70,18 @@ def tour_reservation(request):
         desc = post["desc"]
         people = post["people"]
         stmt2 = "SELECT t_start_location, t_description, t_price FROM tour;"
-        if(startdate == None):
-            startdate = "'2021-12-25'"
-            
-        if(enddate == None):
-            enddate = "'2026-12-25'"
+        print("first: " + startdate + enddate + desc + location)
         
-        if(desc == None):
-            desc = ' '
+        if (startdate == ""):
+            startdate = '2021-12-25'
             
-        if(location == None):
+        if(enddate == ""):
+            enddate = '2026-12-25'
+        
+        if(desc == ""):
+            desc = ' '
+        print("last: " + startdate + " " + enddate + " " + desc + " " + location)
+        if(location == ""):
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'"
@@ -88,6 +90,17 @@ def tour_reservation(request):
         r = cursor.fetchall()
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})   
+
+def tour_details(request):
+    if request.method == "GET":
+        id = 1
+        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);        
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        print(r)
+        return render(request, 'travel/Tour-details.html', {'tours': r})
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
