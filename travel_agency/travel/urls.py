@@ -12,6 +12,7 @@ urlpatterns = [
     path('friends/', views.friends, name = 'friends'),
     path('manage_reservations/', views.manage_reservations, name = 'manage_reservations'),
     path('manage_reservations/<int:pk>', views.update_booking, name = 'update_booking'),
+    path('tours/<int:pk>', views.assign_guide, name = 'assign_guide'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),
     path('register/', views.register_c, name = 'register'),
