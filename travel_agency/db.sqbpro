@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/kimya/Documents/GitHub/Django_Projects/travel_agency/db.sqlite3" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2662"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,8:maincustomer"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="auth_group" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="18"/><column index="2" value="36"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="customer" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="31"/><column index="2" value="42"/><column index="3" value="59"/><column index="4" value="69"/><column index="5" value="62"/><column index="6" value="45"/><column index="7" value="52"/><column index="8" value="35"/><column index="9" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">DROP TABLE IF EXISTS book_flight;
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/kimya/Documents/GitHub/Django_Projects/travel_agency/db.sqlite3" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2463"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,5:mainhotel"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="activity" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="30"/><column index="2" value="43"/><column index="3" value="65"/><column index="4" value="49"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="auth_group" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="18"/><column index="2" value="36"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="book_room" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="31"/><column index="2" value="31"/><column index="3" value="75"/><column index="4" value="69"/><column index="5" value="30"/><column index="6" value="39"/><column index="7" value="61"/><column index="8" value="71"/><column index="9" value="69"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="booking" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="31"/><column index="2" value="75"/><column index="3" value="69"/><column index="4" value="79"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="hotel" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="31"/><column index="2" value="49"/><column index="3" value="71"/><column index="4" value="53"/><column index="5" value="65"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">DROP TABLE IF EXISTS book_flight;
 DROP TABLE IF EXISTS evaluate_guide;
 DROP TABLE IF EXISTS evaluate_hotel;
 DROP TABLE IF EXISTS book_room;
@@ -6,10 +6,7 @@ DROP TABLE IF EXISTS reserves;
 DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS evaluate_tour;
 DROP TABLE IF EXISTS buys;
-DROP TABLE IF EXISTS customer;
-DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS feedback;
-DROP TABLE IF EXISTS guide;
 DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS has;
 DROP TABLE IF EXISTS places_activities;
@@ -19,19 +16,22 @@ DROP TABLE IF EXISTS extra_activity;
 DROP TABLE IF EXISTS room;
 DROP TABLE IF EXISTS hotel;
 DROP TABLE IF EXISTS flight;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS guide;
+DROP TABLE IF EXISTS customer;
 DROP TABLE IF EXISTS tour;
 DROP TABLE IF EXISTS assign;
 
 CREATE TABLE customer(
-u_id INT NOT NULL, 
+u_id INT NOT NULL,
 name VARCHAR(50) NOT NULL,
 username VARCHAR(50) NOT NULL,
-c_bdate Date, 
-c_address VARCHAR(250), 
-c_sex VARCHAR(10), 
+c_bdate Date,
+c_address VARCHAR(250),
+c_sex VARCHAR(10),
 c_wallet INT NOT NULL,
 pw VARCHAR(50) NOT NULL,
-phone NUMERIC(11,0), 
+phone NUMERIC(11,0),
 PRIMARY KEY (u_id));
 
 CREATE TABLE employee(
@@ -40,88 +40,88 @@ name CHAR(50) NOT NULL,
 username VARCHAR(50) NOT NULL,
 phone NUMERIC(11,0),
 pw VARCHAR(50) NOT NULL,
-e_salary INT, 
+e_salary INT,
 PRIMARY KEY (u_id));
 
 CREATE TABLE guide(
-u_id INT NOT NULL, 
+u_id INT NOT NULL,
 name CHAR(50) NOT NULL,
-username VARCHAR(50) NOT NULL, 
+username VARCHAR(50) NOT NULL,
 phone NUMERIC(11,0), 
-pw VARCHAR(50) NOT NULL, 
+pw VARCHAR(50) NOT NULL,
 g_salary INT,
-g_points INT, 
+g_points INT,
 g_rating INT,
 PRIMARY KEY (u_id));
 
 CREATE TABLE booking(
-b_id INT NOT NULL, 
+b_id INT NOT NULL,
 b_start_date DATE NOT NULL,
 b_end_date DATE NOT NULL,
 no_of_people INT,
-PRIMARY KEY (b_id, b_start_date, b_end_date));
+PRIMARY KEY (b_id));
 
 CREATE TABLE tour(
-t_id INT NOT NULL, 
-t_start_date DATE NOT NULL, 
-t_end_date DATE NOT NULL, 
-t_start_location VARCHAR(50), 
-t_description VARCHAR(250), 
+t_id INT NOT NULL,
+t_start_date DATE NOT NULL,
+t_end_date DATE NOT NULL,
+t_start_location VARCHAR(50),
+t_description VARCHAR(250),
 t_price INT,
 t_rating INT,
-t_capacity INT, 
-PRIMARY KEY (t_id,t_start_date, t_end_date));
+t_capacity INT,
+PRIMARY KEY (t_id));
 
 CREATE TABLE place(
-p_id INT NOT NULL, 
-p_name VARCHAR(50), 
-p_location VARCHAR(50), 
+p_id INT NOT NULL,
+p_name VARCHAR(50),
+p_location VARCHAR(50),
 PRIMARY KEY (p_id));
 
 CREATE TABLE activity(
 a_id INT NOT NULL,
-a_date DATE NOT NULL, 
-a_capacity INT, 
-a_name VARCHAR(50), 
-PRIMARY KEY (a_id, a_date));
+a_date DATE NOT NULL,
+a_capacity INT,
+a_name VARCHAR(50),
+PRIMARY KEY (a_id));
 
 CREATE TABLE extra_activity(
-a_id INT NOT NULL, 
+a_id INT NOT NULL,
 a_date DATE NOT NULL,
-price INT, 
-PRIMARY KEY (a_id, a_date),
-FOREIGN KEY (a_id, a_date) REFERENCES activity(a_id, a_date));
+price INT,
+PRIMARY KEY (a_id),
+FOREIGN KEY (a_id) REFERENCES activity(a_id));
 
 CREATE TABLE hotel(
-h_id INT NOT NULL, 
-h_name VARCHAR(50), 
+h_id INT NOT NULL,
+h_name VARCHAR(50),
 h_address VARCHAR(50),
 h_phone NUMERIC(11,0),
-h_capacity INT, 
+h_capacity INT,
 PRIMARY KEY (h_id));
 
 CREATE TABLE room(
-h_id INT NOT NULL, 
-r_number INT NOT NULL, 
-bed_capacity INT, 
-r_type CHAR(50), 
-r_price INT, 
-PRIMARY KEY (h_id, r_number), 
+h_id INT NOT NULL,
+r_number INT NOT NULL,
+bed_capacity INT,
+r_type CHAR(50),
+r_price INT,
+PRIMARY KEY (h_id, r_number),
 FOREIGN KEY (h_id) REFERENCES hotel(h_id));
 
 CREATE TABLE flight(
-f_id INT NOT NULL, 
-f_date DATE NOT NULL, 
-f_price INT, 
+f_id INT NOT NULL,
+f_date DATE NOT NULL,
+f_price INT,
 f_departure VARCHAR(50),
-f_arrival VARCHAR(50), 
-PRIMARY KEY (f_id, f_date));
+f_arrival VARCHAR(50),
+PRIMARY KEY (f_id));
 
 CREATE TABLE reservation(
-r_id INT NOT NULL, 
-r_start_date DATE, 
-r_end_date DATE, 
-r_price INT, 
+r_id INT NOT NULL,
+r_start_date DATE,
+r_end_date DATE,
+r_price INT,
 r_customer_num INT,
 PRIMARY KEY (r_id));
 
@@ -134,15 +134,15 @@ PRIMARY KEY(g_id, c_id),
 FOREIGN KEY(g_id) REFERENCES guide(u_id),
 FOREIGN KEY(c_id) REFERENCES customer(u_id));
 
-CREATE TABLE evaluate_tour( 
+CREATE TABLE evaluate_tour(
 t_id INT NOT NULL,
 t_start_date DATE NOT NULL,
 t_end_date DATE NOT NULL,
 c_id INT NOT NULL,
 t_comment CHAR(250),
 t_rate INT,
-PRIMARY KEY(t_id, t_start_date, t_end_date,  c_id),
-FOREIGN KEY(t_id, t_start_date, t_end_date) REFERENCES tour(t_id, t_start_date, t_end_date),       
+PRIMARY KEY(t_id,  c_id),
+FOREIGN KEY(t_id) REFERENCES tour(t_id),
 FOREIGN KEY(c_id) REFERENCES customer(u_id) );
 
 CREATE TABLE evaluate_hotel(
@@ -162,9 +162,9 @@ a_id INT NOT NULL,
 a_date DATE NOT NULL,
 p_id INT NOT NULL,
 num_customer INT,
-PRIMARY KEY(t_id, t_start_date, t_end_date, a_id, a_date, p_id),
-FOREIGN KEY(t_id, t_start_date, t_end_date) REFERENCES tour(t_id, t_start_date, t_end_date),
-FOREIGN KEY(a_id, a_date) REFERENCES activity(a_id, a_date),
+PRIMARY KEY(t_id, a_id, p_id),
+FOREIGN KEY(t_id) REFERENCES tour(t_id),
+FOREIGN KEY(a_id) REFERENCES activity(a_id),
 FOREIGN KEY(p_id) REFERENCES place(p_id));
 
 CREATE TABLE buys(
@@ -173,11 +173,11 @@ a_id INT,
 a_date DATE,
 c_id INT,
 PRIMARY KEY(receipt_id),
-FOREIGN KEY(a_id, a_date) REFERENCES extra_activity(a_id, a_date),
+FOREIGN KEY(a_id) REFERENCES extra_activity(a_id),
 FOREIGN KEY(c_id) REFERENCES customer(u_id));
 
-CREATE TABLE reserves( 
-r_id INT NOT NULL, 
+CREATE TABLE reserves(
+r_id INT NOT NULL,
 t_id INT NOT NULL,
 t_start_date DATE NOT NULL,
 t_end_date DATE NOT NULL,
@@ -185,46 +185,46 @@ e_id INT NOT NULL,
 c_id INT NOT NULL,
 explanation CHAR(50),
 is_accepted BOOLEAN,
-PRIMARY KEY(t_id,t_start_date,t_end_date,e_id,c_id, r_id),
+PRIMARY KEY(t_id,e_id,c_id, r_id),
 FOREIGN KEY(r_id) REFERENCES reservation(r_id),
-FOREIGN KEY(t_id, t_start_date, t_end_date) REFERENCES tour(t_id, t_start_date, t_end_date),
-FOREIGN KEY(e_id) REFERENCES employee(u_id), 
+FOREIGN KEY(t_id) REFERENCES tour(t_id),
+FOREIGN KEY(e_id) REFERENCES employee(u_id),
 FOREIGN KEY(c_id) REFERENCES customer(u_id));
 
-CREATE TABLE feedback( 
-t_id INT NOT NULL, 
-t_start_date DATE NOT NULL, 
-t_end_date DATE NOT NULL, 
+CREATE TABLE feedback(
+t_id INT NOT NULL,
+t_start_date DATE NOT NULL,
+t_end_date DATE NOT NULL,
 g_id INT NOT NULL,
 f_text VARCHAR(250),
-PRIMARY KEY(t_id, t_start_date, t_end_date, g_id),
-FOREIGN KEY(t_id, t_start_date, t_end_date) REFERENCES tour(t_id, t_start_date, t_end_date),
+PRIMARY KEY(t_id, g_id),
+FOREIGN KEY(t_id) REFERENCES tour(t_id),
 FOREIGN KEY(g_id) REFERENCES guide(u_id));
 
-CREATE TABLE assign( 
-t_id INT NOT NULL, 
-t_start_date DATE NOT NULL, 
-t_end_date DATE NOT NULL, 
+CREATE TABLE assign(
+t_id INT NOT NULL,
+t_start_date DATE NOT NULL,
+t_end_date DATE NOT NULL,
 g_id INT NOT NULL,
 e_id INT NOT NULL,
 accepted BOOLEAN,
-PRIMARY KEY(t_id, t_start_date, t_end_date, g_id, e_id),
-FOREIGN KEY(t_id,t_start_date, t_end_date) REFERENCES tour(t_id, t_start_date, t_end_date),
+PRIMARY KEY(t_id, g_id, e_id),
+FOREIGN KEY(t_id) REFERENCES tour(t_id),
 FOREIGN KEY(e_id) REFERENCES employee(u_id),
 FOREIGN KEY(g_id) REFERENCES guide(u_id));
 
-CREATE TABLE  book_room( 
+CREATE TABLE  book_room(
 b_id INT NOT NULL,
 h_id INT NOT NULL,
 b_start_date DATE NOT NULL,
 b_end_date DATE NOT NULL,
 c_id INT,
-e_id INT, 
+e_id INT,
 r_number INT NOT NULL,
 is_accepted BOOLEAN,
 explanation CHAR(250),
-PRIMARY KEY(b_id, b_start_date, b_end_date, h_id, r_number),
-FOREIGN KEY(b_id, b_start_date, b_end_date) REFERENCES booking(b_id, b_start_date, b_end_date),
+PRIMARY KEY(b_id, h_id, r_number),
+FOREIGN KEY(b_id) REFERENCES booking(b_id),
 FOREIGN KEY(h_id, r_number) REFERENCES room(h_id, r_number),
 FOREIGN KEY(c_id) REFERENCES customer(u_id),
 FOREIGN KEY(e_id) REFERENCES employee(u_id));
@@ -237,8 +237,8 @@ c_id INT,
 e_id INT,
 is_accepted BOOLEAN,
 explanation CHAR(250),
-PRIMARY KEY(f_booking_id, f_id, f_date),
-FOREIGN KEY(f_id,f_date) REFERENCES flight(f_id, f_date),
+PRIMARY KEY(f_booking_id, f_id),
+FOREIGN KEY(f_id) REFERENCES flight(f_id),
 FOREIGN KEY(c_id) REFERENCES customer(u_id),
 FOREIGN KEY(e_id) REFERENCES employee(u_id));
 
@@ -247,7 +247,7 @@ r_id INT NOT NULL,
 b_id INT NOT NULL,
 b_start_date DATE NOT NULL,
 b_end_date DATE NOT NULL,
-PRIMARY KEY(r_id, b_id, b_start_date, b_end_date),
+PRIMARY KEY(r_id, b_id),
 FOREIGN KEY(r_id) REFERENCES reservation(r_id),
-FOREIGN KEY(b_id, b_start_date, b_end_date) REFERENCES booking(b_id, b_start_date, b_end_date));
+FOREIGN KEY(b_id) REFERENCES booking(b_id));
 </sql><current_tab id="0"/></tab_sql></sqlb_project>

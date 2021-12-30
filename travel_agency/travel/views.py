@@ -23,10 +23,16 @@ def index(request):
 
 def hotel_booking(request):
     if request.method == "GET":
-        stmt = "SELECT * FROM hotel;"
+        check_in = '2021-12-28'
+        check_out = '2021-12-28'
+        people = "1"
+        stmt = "SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in 
+        +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE" 
+        + " h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
+        print(r)
         cursor.close()
         return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
     if request.method == "POST":
@@ -150,23 +156,66 @@ def manage_reservations(request):
         cursor.execute(stmt)
         r = cursor.fetchall()
         cursor.close()
-        print(r)
         return render(request, 'travel/manage_reservations.html', {'reservations': r})  
     if request.method == "POST":
-        # TODO: 
-        # search reservation by code and customer name
-        # reservation by start and end date 
-        # search by rating
-        return render(request, 'travel/manage_reservations.html')
+        post = request.POST
+        check_in = post["check_in"]
+        check_out = post["check_out"]
+        res_code = post["res_code"]
+        rating = post["rating"]
+        p_name = post["p_name"]
+        ok = False
+        stmt = ""
+        stmt1 = "SELECT b_id FROM book_room WHERE b_id = "+ res_code
+        stmt2 = "SELECT b_id FROM book_room WHERE b_start_date = '"+ check_in +"' AND b_end_date = '" + check_out+"'"
+        stmt3 = "SELECT b_id FROM book_room NATURAL JOIN evaluate_hotel WHERE h_rate = "+rating
+        stmt4 = "SELECT b_id FROM book_room NATURAL JOIN customer WHERE name = "+p_name
+        if(res_code != ""):
+            stmt = stmt1
+            ok = True
+        if(check_in != "" and check_out != ""):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt2+")"
+            else:
+                stmt = stmt2
+                ok = True
+        if(rating != "Rating"):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt3+")"
+            else:
+                stmt = stmt3
+                ok = True
+        if(p_name != ""):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt4+")"
+            else:
+                stmt = stmt4
+                ok = True
+        if(ok):
+            stmt = "SELECT * FROM book_room where b_id IN("+stmt+");"
+            
+        else:
+            stmt = "SELECT * FROM book_room"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
 
-def update_booking(request, pk):
-        # TODO: set is accepted, edit dates etc.
-        res = request.POST.get('res', False)
-        print(res)
+        return render(request, 'travel/manage_reservations.html', {'reservations': r})  
+
+def update_booking(request, b_id, h_id, r_id):
+    if request.method == "POST":
+        stmt = "SELECT * FROM book_room WHERE b_id = "+str(b_id)+" AND h_id = "+str(h_id)+" AND r_number = "+str(r_id)+";"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
         context = {
-        'news':'asfasf',
+        'booking':r,
         }
         return render(request, 'travel/update_booking.html', context)
+    if request.method == "GET":
+        return render(request, 'travel/update_booking.html')
 
 def login(request):
     if request.method == 'POST':
