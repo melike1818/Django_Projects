@@ -1,12 +1,63 @@
 {% extends "travel/base.html" %}
 {% block body_block %}
-
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<style type="text/css">
+	.container{
+		background: #9FC4C9;
+	}
+</style>
 <div class="container">
   <div class="jumbotron">
-    <h1>This is edit booking</h1>
+    <h1>Editing Reservation {{context.res_code}}</h1>
   </div>
   <!-- A form will appear here -->
-  {{booking}}
+  	 <form action="#" method="POST" class="u-clearfix u-form-custom-backend u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 10px;">
+  	 {% csrf_token %}
+  	 <div class = "column">
+  	 <div class = "row">
+  	 	<div class="col-sm-12 col-lg-12 p-0">
+  	 		 <label>Hotel ID</label>
+             <input type="search" class="form-control search-slt" placeholder={{context.hotel_id}} name="hotel_id" id="hotel_id" required>
+        </div>
+        <div class="col-sm-12 col-lg-12 p-0">
+        	 <label>Customer ID</label>
+             <input type="search" class="form-control search-slt" placeholder={{context.c_id}} name="c_id" id="c_id" required>
+        </div>
+        <div class="col-sm-12 col-lg-12 p-0">
+        	 <label>Room Number</label>
+             <input type="search" class="form-control search-slt" placeholder={{context.r_id}} name="r_id" id="r_id" required>
+        </div>
+
+  	 </div>
+  	 <div class = "row">
+  	 	<div class="col-sm-6 col-lg-6 p-1">
+  	 	  <label>Check In Is {{context.start}}</label>
+          <input type="date" class="form-control" name="check_in" id="check_in" value="{{context.start}}" required/>
+        </div>
+        <div class="col-sm-6 col-lg-6 p-1">
+        	<label>Check Out Is {{context.end}}</label>
+            <input type="date" class="form-control" name="check_out" id="check_out" value="context_start"  required />
+        </div>
+  	 </div>
+  	 <div class = "row">
+  	 	{% if context.status != None %}
+		  	<h3> The reservations status has been already reviewed</h3>
+		{% else %}
+			<div class="col-sm-6 col-lg-6 p-0">
+				<button type="button" class="btn btn-danger">Reject</button>
+			</div>
+			<div class="col-sm-6 col-lg-6 p-0">
+				<button type="button" class="btn btn-success">Accept</button>
+			</div>
+	    {% endif %}
+  	 </div>
+  	 </div>
+
+  	 </form>
+ 
+
+
 </div>
 
 {% endblock %}
