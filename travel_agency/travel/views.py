@@ -134,14 +134,20 @@ def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
 
 def previous_trips(request):
-    return render(request, 'travel/Previous-Trips.html')
+    cursor = connection.cursor()
+    stmt = "SELECT * FROM book_room NATURAL JOIN customer WHERE c_id = '"+ request.session['username']+"';"
+    cursor.execute(stmt)
+    r = cursor.fetchone()
+    cursor.close()
+    return render(request, 'travel/Previous-Trips.html', {'previous_trips': r})
 
 def friends(request):
     return render(request, 'travel/Friends.html')
 
 def my_profile(request):
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM customer')
+    stmt = "SELECT * FROM "+request.session['type']+" WHERE username = '"+ request.session['username']+"';"
+    cursor.execute(stmt)
     r = cursor.fetchone()
     cursor.close()
     return render(request, 'travel/My-Profile.html', {'profile': r})
@@ -206,13 +212,22 @@ def update_booking(request, b_id, h_id, r_id):
         stmt = "SELECT * FROM book_room WHERE b_id = "+str(b_id)+" AND h_id = "+str(h_id)+" AND r_number = "+str(r_id)+";"
         cursor = connection.cursor()
         cursor.execute(stmt)
-        r = cursor.fetchall()
+        r = cursor.fetchone()
         cursor.close()
+        print("post")
         context = {
-        'booking':r,
+            'res_code':r[0],
+            'hotel_id':r[1],
+            'start':r[2],
+            'end':r[3],
+            'c_id':r[4],
+            'r_id':r[6],
+            'status':r[7],
+            'comment':r[8],
         }
-        return render(request, 'travel/update_booking.html', context)
+    return render(request, 'travel/update_booking.html', {'context': context})
     if request.method == "GET":
+        print("get")
         return render(request, 'travel/update_booking.html')
 
 def login(request):
@@ -237,6 +252,7 @@ def login(request):
         if (r != None):
             request.session['username'] = username
             request.session[t] = True
+            request.session['type'] = t
             return HttpResponseRedirect("/")
         else:
             return render(request, 'travel/Login.html')
