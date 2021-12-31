@@ -66,7 +66,7 @@ def make_booking(request, pk):
         print("inside post")
     else:
         #get the h_id
-        h_id = 1
+        h_id = pk
         cursor = connection.cursor()
         stmt = "SELECT * FROM room WHERE h_id = '"+str(h_id)+"';";
         cursor.execute(stmt)
