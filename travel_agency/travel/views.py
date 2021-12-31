@@ -64,8 +64,10 @@ def hotel_booking(request):
 def tour_reservation(request):
     if request.method == "GET":
 
-        #stmt = "SELECT t_start_location, t_description, t_price  FROM tour; "
-        stmt = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id != a.t_id; "
+        if 'Employee' in request.session:
+            stmt = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+        if 'Customer' in request.session:
+            stmt = "SELECT t_start_location, t_description, t_price  FROM tour; "
 
         cursor = connection.cursor()
         cursor.execute(stmt)
@@ -79,14 +81,14 @@ def tour_reservation(request):
         location = post["location"]
         desc = post["desc"]
         people = post["people"]
-        stmt2 = "SELECT t_start_location, t_description, t_price FROM tour;"
+        guide = post["guide"]
+        if 'Employee' in request.session:
+            stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+        if 'Customer' in request.session:
+            stmt2 = "SELECT t_start_location, t_description, t_price  FROM tour; "
+
         print("first: " + startdate + enddate + desc + location)
-        
-        if (startdate == ""):
-            startdate = '2021-12-25'
-        #guide = post["guide"]
-        #stmt2 = "SELECT t_start_location, t_description, t_price  FROM tour; "
-        stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id; "
+
         if(startdate == None):
             startdate = "'2021-12-25'"
             
@@ -100,9 +102,13 @@ def tour_reservation(request):
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'"
+
         #Filter by Guide
-        #if(str(guide) != "All"):
-            #stmt2 = "SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id LIKE '%" + guide + "%'"
+        if(str(guide) == "Assigned"):
+            stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id;"
+
+        if(str(guide) == "Unassigned"):
+            stmt2 = "SELECT DISTINCT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
 
         cursor = connection.cursor()
         cursor.execute(stmt2)
@@ -110,14 +116,16 @@ def tour_reservation(request):
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})
 
-def assign_guide(request, pk):
-    # TODO: set is accepted, edit dates etc.
-    res = request.POST.get('res', False)
-    print(res)
-    context = {
-        'news':'asfasf',
-    }
-    return render(request, 'travel/assign_guide.html', context)
+def assign_guide(request):
+    if request.method == "GET":
+        id = 1
+        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        print(r)
+        return render(request, 'travel/tour/assign_guide.html', {'tours': r})
 
 def tour_details(request):
     if request.method == "GET":
