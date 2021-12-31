@@ -1,0 +1,104 @@
+{% extends "travel/base.html" %}
+{% block body_block %}
+<style type="text/css">
+  .th-sm{
+    background: #9fc4c9;
+  }
+  .hotel_description{
+    background-color: #fff;
+    padding: 2rem;
+  }
+  .h_name{
+    text-align: center;
+  }
+	.search-sec{
+    padding: 2rem;
+	}
+  .container{
+    padding: 2rem;
+	}
+	.search-slt{
+	    display: block;
+	    width: 100%;
+	    font-size: 0.875rem;
+	    line-height: 1.5;
+	    color: #55595c;
+	    background-color: #fff;
+	    background-image: none;
+	    border: 1px solid #ccc;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	.wrn-btn{
+	    width: 100%;
+	    font-size: 16px;
+	    font-weight: 400;
+	    text-transform: capitalize;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	@media (min-width: 992px){
+	    .search-sec{
+	        position: relative;
+	        top: -114px;
+	        background: rgba(26, 70, 104, 0.51);
+	    }
+	}
+
+	@media (max-width: 992px){
+	    .search-sec{
+	        background: #1A4668;
+	    }
+	}
+</style>
+
+
+<div class="hotel_description">
+  <h1 class="h_name">{{hotel.1}}</h1>
+    <p class="u-text u-text-2">Hotel Description<br>{{hotel.3}}
+    </p>
+</div>
+
+
+<section class="u-clearfix u-section-1" id="sec-6b16">
+  <div class="container">
+  <table id="hotel-table" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th class="th-sm">Hotel ID
+
+      </th>
+      <th class="th-sm">Room Number
+
+      </th>
+      <th class="th-sm">Bed Capacity
+
+      </th>
+      <th class="th-sm">Room Type
+
+      </th>
+      <th class="th-sm">Room Price
+
+      </th>
+      <th class="th-sm">Booking
+
+      </th>
+    </tr>
+  </thead>
+  {% for room in rooms %}
+  <tbody>
+    <tr>
+   	  {% for value in room %}
+      <td class="th-sm">{{value}}</td>
+      {% endfor %}
+      <td class="th-sm">
+		<button type="button" class="btn btn-dark">Book</button>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+</div>
+</section>
+
+{% endblock %}

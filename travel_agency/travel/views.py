@@ -47,7 +47,7 @@ def hotel_booking(request):
         # Filter by location and rating and availibility
         if(str(rating) != "Select Minimum Rating For Hotel" and location != ""):
             stmt1 = "SELECT * FROM (SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT * FROM hotel WHERE h_address LIKE '%" + location + "%')) INNER NATURAL JOIN (SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+ ");"
-        
+
         # only by availibility
         if(str(rating) == "Select Minimum Rating For Hotel" and location == ""):
             stmt1 = "SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
@@ -56,6 +56,25 @@ def hotel_booking(request):
         r = cursor.fetchall()
         cursor.close()
         return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
+
+def make_booking(request, pk):
+    if request.method == "POST":
+        print("inside post")
+    else:
+        #get the h_id
+        h_id = 1
+        cursor = connection.cursor()
+        stmt = "SELECT * FROM room WHERE h_id = '"+str(h_id)+"';";
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        print("Rooms")
+        print(r)
+        stmt = "SELECT * FROM hotel WHERE h_id = '"+str(h_id)+"';";
+        cursor.execute(stmt)
+        h = cursor.fetchone()
+        print("Hotel Info")
+        print(h)
+        return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h})
 
 def tour_reservation(request):
     if request.method == "GET":
@@ -77,7 +96,7 @@ def tour_reservation(request):
         people = post["people"]
         stmt2 = "SELECT t_start_location, t_description, t_price FROM tour;"
         print("first: " + startdate + enddate + desc + location)
-        
+
         if (startdate == ""):
             startdate = '2021-12-25'
         #guide = post["guide"]
@@ -85,10 +104,10 @@ def tour_reservation(request):
         stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id; "
         if(startdate == None):
             startdate = "'2021-12-25'"
-            
+
         if(enddate == ""):
             enddate = '2026-12-25'
-        
+
         if(desc == ""):
             desc = ' '
         print("last: " + startdate + " " + enddate + " " + desc + " " + location)
@@ -118,7 +137,7 @@ def assign_guide(request, pk):
 def tour_details(request):
     if request.method == "GET":
         id = 1
-        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);        
+        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
@@ -151,11 +170,11 @@ def manage_reservations(request):
         r = cursor.fetchall()
         cursor.close()
         print(r)
-        return render(request, 'travel/manage_reservations.html', {'reservations': r})  
+        return render(request, 'travel/manage_reservations.html', {'reservations': r})
     if request.method == "POST":
-        # TODO: 
+        # TODO:
         # search reservation by code and customer name
-        # reservation by start and end date 
+        # reservation by start and end date
         # search by rating
         return render(request, 'travel/manage_reservations.html')
 

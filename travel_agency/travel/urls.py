@@ -5,6 +5,7 @@ app_name = 'travel'
 
 urlpatterns = [
     path('hotels/', views.hotel_booking, name = 'hotels'),
+    path('hotels/<int:pk>', views.make_booking, name = 'make_booking'),
     path('tours/', views.tour_reservation, name = 'tours'),
     path('tours/details', views.tour_details, name = 'tour_details'),
     path('flight/', views.flight_booking, name = 'flight'),
