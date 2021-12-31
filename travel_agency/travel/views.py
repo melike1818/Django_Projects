@@ -23,10 +23,14 @@ def index(request):
 
 def hotel_booking(request):
     if request.method == "GET":
-        stmt = "SELECT * FROM hotel;"
+        check_in = '2021-12-28'
+        check_out = '2021-12-28'
+        people = "1"
+        stmt = "SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE" + " h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+";"
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
+        print(r)
         cursor.close()
         return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
     if request.method == "POST":
@@ -79,8 +83,10 @@ def make_booking(request, pk):
 def tour_reservation(request):
     if request.method == "GET":
 
-        #stmt = "SELECT t_start_location, t_description, t_price  FROM tour; "
-        stmt = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id != a.t_id; "
+        if 'Employee' in request.session:
+            stmt = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+        if 'Customer' in request.session:
+            stmt = "SELECT t_start_location, t_description, t_price  FROM tour; "
 
         cursor = connection.cursor()
         cursor.execute(stmt)
@@ -94,14 +100,14 @@ def tour_reservation(request):
         location = post["location"]
         desc = post["desc"]
         people = post["people"]
-        stmt2 = "SELECT t_start_location, t_description, t_price FROM tour;"
+        guide = post["guide"]
+        if 'Employee' in request.session:
+            stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+        if 'Customer' in request.session:
+            stmt2 = "SELECT t_start_location, t_description, t_price  FROM tour; "
+
         print("first: " + startdate + enddate + desc + location)
 
-        if (startdate == ""):
-            startdate = '2021-12-25'
-        #guide = post["guide"]
-        #stmt2 = "SELECT t_start_location, t_description, t_price  FROM tour; "
-        stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id; "
         if(startdate == None):
             startdate = "'2021-12-25'"
 
@@ -115,9 +121,13 @@ def tour_reservation(request):
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
             stmt2 = "SELECT t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'"
+
         #Filter by Guide
-        #if(str(guide) != "All"):
-            #stmt2 = "SELECT t_start_location, t_description, t_price, 'Unassigned' FROM tour t, assign a where t.t_id != a.t_id LIKE '%" + guide + "%'"
+        if(str(guide) == "Assigned"):
+            stmt2 = "SELECT t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id;"
+
+        if(str(guide) == "Unassigned"):
+            stmt2 = "SELECT DISTINCT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
 
         cursor = connection.cursor()
         cursor.execute(stmt2)
@@ -125,14 +135,16 @@ def tour_reservation(request):
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})
 
-def assign_guide(request, pk):
-    # TODO: set is accepted, edit dates etc.
-    res = request.POST.get('res', False)
-    print(res)
-    context = {
-        'news':'asfasf',
-    }
-    return render(request, 'travel/assign_guide.html', context)
+def assign_guide(request):
+    if request.method == "GET":
+        id = 1
+        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        print(r)
+        return render(request, 'travel/tour/assign_guide.html', {'tours': r})
 
 def tour_details(request):
     if request.method == "GET":
@@ -149,14 +161,20 @@ def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
 
 def previous_trips(request):
-    return render(request, 'travel/Previous-Trips.html')
+    cursor = connection.cursor()
+    stmt = "SELECT * FROM book_room NATURAL JOIN customer WHERE c_id = '"+ request.session['username']+"';"
+    cursor.execute(stmt)
+    r = cursor.fetchone()
+    cursor.close()
+    return render(request, 'travel/Previous-Trips.html', {'previous_trips': r})
 
 def friends(request):
     return render(request, 'travel/Friends.html')
 
 def my_profile(request):
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM customer')
+    stmt = "SELECT * FROM "+request.session['type']+" WHERE username = '"+ request.session['username']+"';"
+    cursor.execute(stmt)
     r = cursor.fetchone()
     cursor.close()
     return render(request, 'travel/My-Profile.html', {'profile': r})
@@ -169,23 +187,75 @@ def manage_reservations(request):
         cursor.execute(stmt)
         r = cursor.fetchall()
         cursor.close()
-        print(r)
         return render(request, 'travel/manage_reservations.html', {'reservations': r})
     if request.method == "POST":
-        # TODO:
-        # search reservation by code and customer name
-        # reservation by start and end date
-        # search by rating
-        return render(request, 'travel/manage_reservations.html')
+        post = request.POST
+        check_in = post["check_in"]
+        check_out = post["check_out"]
+        res_code = post["res_code"]
+        rating = post["rating"]
+        p_name = post["p_name"]
+        ok = False
+        stmt = ""
+        stmt1 = "SELECT b_id FROM book_room WHERE b_id = "+ res_code
+        stmt2 = "SELECT b_id FROM book_room WHERE b_start_date = '"+ check_in +"' AND b_end_date = '" + check_out+"'"
+        stmt3 = "SELECT b_id FROM book_room NATURAL JOIN evaluate_hotel WHERE h_rate = "+rating
+        stmt4 = "SELECT b_id FROM book_room NATURAL JOIN customer WHERE name = "+p_name
+        if(res_code != ""):
+            stmt = stmt1
+            ok = True
+        if(check_in != "" and check_out != ""):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt2+")"
+            else:
+                stmt = stmt2
+                ok = True
+        if(rating != "Rating"):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt3+")"
+            else:
+                stmt = stmt3
+                ok = True
+        if(p_name != ""):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt4+")"
+            else:
+                stmt = stmt4
+                ok = True
+        if(ok):
+            stmt = "SELECT * FROM book_room where b_id IN("+stmt+");"
 
-def update_booking(request, pk):
-        # TODO: set is accepted, edit dates etc.
-        res = request.POST.get('res', False)
-        print(res)
+        else:
+            stmt = "SELECT * FROM book_room"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+
+        return render(request, 'travel/manage_reservations.html', {'reservations': r})
+
+def update_booking(request, b_id, h_id, r_id):
+    if request.method == "POST":
+        stmt = "SELECT * FROM book_room WHERE b_id = "+str(b_id)+" AND h_id = "+str(h_id)+" AND r_number = "+str(r_id)+";"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchone()
+        cursor.close()
+        print("post")
         context = {
-        'news':'asfasf',
+            'res_code':r[0],
+            'hotel_id':r[1],
+            'start':r[2],
+            'end':r[3],
+            'c_id':r[4],
+            'r_id':r[6],
+            'status':r[7],
+            'comment':r[8],
         }
-        return render(request, 'travel/update_booking.html', context)
+    return render(request, 'travel/update_booking.html', {'context': context})
+    if request.method == "GET":
+        print("get")
+        return render(request, 'travel/update_booking.html')
 
 def login(request):
     if request.method == 'POST':
@@ -209,6 +279,7 @@ def login(request):
         if (r != None):
             request.session['username'] = username
             request.session[t] = True
+            request.session['type'] = t
             return HttpResponseRedirect("/")
         else:
             return render(request, 'travel/Login.html')

@@ -88,7 +88,7 @@
             <div class="human-select">
               <button type="button" id="closable-wrapper" class="close" aria-label="Close">
                 <label> Guide:</label>
-                <select name="people" id="people" class="people-count">
+                <select name="guide" id="guide" class="people-count">
                     <option value="All"selected="">All</option>
                     <option value="Assigned">Assigned</option>
                     <option value="Unassigned">Unassigned </option>
@@ -107,6 +107,7 @@
   </div>
 </section>
 
+{% if 'Customer' in request.session %}
 <section class="u-clearfix u-section-1" id="sec-6b16">
   <div class="container">
     <table id="tours" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
@@ -118,13 +119,10 @@
         </th>
         <th class="th-sm">Price
         </th>
-        <th class="th-sm">Guide
-        </th>
         <th class="th-sm">Details
         </th>
       </tr>
     </thead>
-    {% if 'Customer' in request.session %}
     {% for tour in tours %}
     <tbody>
       <tr>
@@ -137,33 +135,54 @@
       </tr>
     </tbody>
     {% endfor %}
-    {% else %}
-    {% if 'Employee' in request.session %}
-            {% for tour in tours %}
-                <tbody>
-                <tr>
-                    {% for value in tour %}
-                        {% if value %}
-                            <td class="th-sm">{{value}}</td>
-                        {% else %}
-                            <td class="th-sm">
-                                <button type="submit" class="btn btn-dark">Assign Guide</button>
-                            </td>
-                        {% endif %}
-                    {% endfor %}
-                    <td class="th-sm">
-                        <button type="button" class="btn btn-dark">Check Details</button>
-                    </td>
-                </tr>
-                </tbody>
-            {% endfor %}
-        {% endif %}
-    {% endif %}
-
     </table>
   </div>
 </section>
+{% endif %}
+    {% if 'Employee' in request.session %}
+        <section class="u-clearfix u-section-1" id="sec-6b16">
+            <div class="container">
+                <table id="tours" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th class="th-sm">Tour Location
+                        </th>
+                        <th class="th-sm">Description
+                        </th>
+                        <th class="th-sm">Price
+                        </th>
+                        <th class="th-sm">Guide
+                        </th>
+                        <th class="th-sm">Details
+                        </th>
+                    </tr>
+                    </thead>
+        {% for tour in tours %}
+            <tbody>
+            <tr>
+                {% for value in tour %}
+                    {% if value %}
+                    <td class="th-sm">{{value}}</td>
+                    {% else %}
+                        <td class="th-sm">
+
+                                <button type="submit" class="btn btn-dark">Assign Guide</button>
+
+                        </td>
+                    {% endif %}
+                {% endfor %}
+                <td class="th-sm">
+                    <button type="button" class="btn btn-dark">Check Details</button>
+                </td>
+            </tr>
+            </tbody>
+        {% endfor %}
+                </table>
+            </div>
+        </section>
+    {% endif %}
 {% endblock %}
+
 
 {{% block js %}
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
