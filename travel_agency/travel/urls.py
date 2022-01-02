@@ -15,6 +15,7 @@ urlpatterns = [
     path('manage_booking/<int:b_id>/<int:h_id>/<int:r_id>', views.booking_detail, name = 'booking_detail'),
     path('manage_booking/update', views.update_booking, name = 'update_booking'),
     path('tours/assign/<int:pk>', views.assign_guide, name = 'assign_guide'),
+    path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),
     path('register/', views.register_c, name = 'register'),
