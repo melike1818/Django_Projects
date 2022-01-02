@@ -135,7 +135,7 @@ def tour_reservation(request):
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})
 
-def assign_guide(request):
+def assign_guide(request,pk):
     if request.method == "GET":
         id = 1
         stmt = "SELECT * FROM tour WHERE t_id = " + str(id);
