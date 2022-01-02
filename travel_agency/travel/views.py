@@ -107,7 +107,7 @@ def tour_reservation(request):
     if request.method == "GET":
 
         if 'Employee' in request.session:
-            stmt = "SELECT t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
             stmt = "SELECT t_id, t_start_location, t_description, t_price  FROM tour; "
 
@@ -124,7 +124,7 @@ def tour_reservation(request):
         desc = post["desc"]
         people = post["people"]
         if 'Employee' in request.session:
-            stmt2 = "SELECT t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
             stmt2 = "SELECT t_id, t_start_location, t_description, t_price  FROM tour; "
 
@@ -145,11 +145,14 @@ def tour_reservation(request):
         if 'Employee' in request.session:
             guide = post["guide"]
             #Filter by Guide
+            if(str(guide) == "All"):
+                stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+
             if(str(guide) == "Assigned"):
-                stmt2 = "SELECT t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id;"
+                stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id;"
 
             if(str(guide) == "Unassigned"):
-                stmt2 = "SELECT DISTINCT t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+                stmt2 = "SELECT DISTINCT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
 
         cursor = connection.cursor()
         cursor.execute(stmt2)
@@ -157,16 +160,34 @@ def tour_reservation(request):
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})
 
-def assign_guide(request):
+def assign_guide(request,pk):
     if request.method == "GET":
-        id = 1
-        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);
+        t_id = pk
+        stmt = "SELECT u_id, name FROM guide;"
         cursor = connection.cursor()
         cursor.execute(stmt)
-        r = cursor.fetchall()
+        g = cursor.fetchall()
         cursor.close()
-        print(r)
-        return render(request, 'travel/tour/assign_guide.html', {'tours': r})
+        return render(request, 'travel/assign_guide.html', {'guides': g})
+    if request.method == "POST":
+        post = request.POST
+        guide = post["guide"]
+        t_id = pk
+        #Filter by Availability
+        if(str(guide) == "All"):
+            stmt2 = "SELECT u_id, name FROM guide;"
+
+        if(str(guide) == "Available"):
+            stmt2 = "SELECT t_id, '' FROM tour t where t_id = t.t_id ;"
+
+        if(str(guide) == "Unavailable"):
+            stmt2 = "SELECT DISTINCT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+
+        cursor = connection.cursor()
+        cursor.execute(stmt2)
+        g = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/assign_guide', {'guides': g})
 
 def tour_details(request, pk):
     if request.method == "GET":
