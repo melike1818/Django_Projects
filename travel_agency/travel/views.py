@@ -5,7 +5,6 @@ from django.shortcuts import render
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import registerForm
-
 # Create your views here.
 def index(request):
     if request.method == "POST":
@@ -40,6 +39,9 @@ def hotel_booking(request):
         location = post["location"]
         rating = post["rating"]
         people = post["number"]
+        request.session['check_in'] = check_in
+        request.session['check_out'] = check_out
+        request.session['no_people'] = people
         # Filter by rating
         if(str(rating) != "Select Minimum Rating For Hotel" and location == ""):
             stmt1 ="SELECT * FROM (SELECT * FROM hotel where h_id in (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating + ")) INNER NATURAL JOIN (SELECT h_id, h_name, h_address, h_phone, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT * FROM hotel WHERE h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+");"
@@ -64,6 +66,7 @@ def hotel_booking(request):
 def make_booking(request, pk):
     if request.method == "POST":
         print("inside post")
+        return HttpResponse("Booking Successful!")
     else:
         #get the h_id
         h_id = pk
@@ -79,6 +82,26 @@ def make_booking(request, pk):
         print("Hotel Info")
         print(h)
         return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h})
+
+def done_booking(request, pk, r_id):
+    print(pk)
+    print(r_id)
+    print(request.session['u_id'])
+    print(request.session['check_in'])
+    print(request.session['check_out'])
+    print(request.session['no_people'])
+    cursor = connection.cursor()
+    b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+    b_id = b_id + 1
+    #Insert into booking Table
+    parameters = [b_id, request.session['check_in'], request.session['check_out'], request.session['no_people']]
+    cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+    #Insert into book_room table
+    parameters = [b_id, pk, request.session['check_in'], request.session['check_out'], request.session['u_id'], r_id]
+    cursor.execute("INSERT INTO book_room (b_id, h_id, b_start_date, b_end_date,c_id, r_number) VALUES(%s,%s,%s,%s,%s,%s);", parameters)
+    cursor.close()
+    connection.commit()
+    return HttpResponse("Booking Successful! <a href='/'>Go to the Main Page</a>")
 
 def tour_reservation(request):
     if request.method == "GET":
@@ -113,7 +136,7 @@ def tour_reservation(request):
 
         if(desc == ""):
             desc = ' '
-            
+
         if(location == ""):
             stmt2 = "SELECT t_id, t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
@@ -265,7 +288,7 @@ def login(request):
         t = request.POST.get("type", "")
         # check if user exists if exists and password is correct send to index, if not show a warning
         try:
-            stmt = "SELECT username, pw FROM " + t + " WHERE username = '" + username + "' AND pw = '" + password +"'"
+            stmt = "SELECT u_id, username, pw FROM " + t + " WHERE username = '" + username + "' AND pw = '" + password +"'"
             cursor = connection.cursor()
             cursor.execute(stmt)
             r = cursor.fetchone()
@@ -276,6 +299,7 @@ def login(request):
 
 
         if (r != None):
+            request.session['u_id'] = r[0]
             request.session['username'] = username
             request.session[t] = True
             request.session['type'] = t

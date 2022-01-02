@@ -92,7 +92,7 @@
       <td class="th-sm">{{value}}</td>
       {% endfor %}
       <td class="th-sm">
-		<button type="button" class="btn btn-dark">Book</button>
+        <button type="submit" class="btn btn-sm btn-info" onclick="window.location.href='{% url 'travel:done_booking' room.0 room.1 %}'">Book</button>
       </td>
     </tr>
   </tbody>
