@@ -63,6 +63,7 @@ PRIMARY KEY (b_id));
 
 CREATE TABLE tour(
 t_id INT NOT NULL,
+t_name CHAR(50),
 t_start_date DATE NOT NULL,
 t_end_date DATE NOT NULL,
 t_start_location VARCHAR(50),
