@@ -5,6 +5,8 @@ from django.shortcuts import render
 from django.db import connection
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from .forms import registerForm
+from django.urls import reverse
+
 
 # Create your views here.
 def index(request):
@@ -30,7 +32,6 @@ def hotel_booking(request):
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
-        print(r)
         cursor.close()
         return render(request, 'travel/Hotel-Booking.html', {'hotels': r})
     if request.method == "POST":
@@ -84,7 +85,7 @@ def tour_reservation(request):
     if request.method == "GET":
 
         if 'Employee' in request.session:
-            stmt = "SELECT t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
             stmt = "SELECT t_id, t_start_location, t_description, t_price  FROM tour; "
 
@@ -179,7 +180,7 @@ def my_profile(request):
     return render(request, 'travel/My-Profile.html', {'profile': r})
 
 #Only for Employee
-def manage_reservations(request):
+def manage_booking(request):
     if request.method == "GET":
         stmt = "SELECT * FROM book_room"
         cursor = connection.cursor()
@@ -233,14 +234,13 @@ def manage_reservations(request):
 
         return render(request, 'travel/manage_reservations.html', {'reservations': r})
 
-def update_booking(request, b_id, h_id, r_id):
+def booking_detail(request, b_id, h_id, r_id):
     if request.method == "POST":
         stmt = "SELECT * FROM book_room WHERE b_id = "+str(b_id)+" AND h_id = "+str(h_id)+" AND r_number = "+str(r_id)+";"
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchone()
         cursor.close()
-        print("post")
         context = {
             'res_code':r[0],
             'hotel_id':r[1],
@@ -251,10 +251,24 @@ def update_booking(request, b_id, h_id, r_id):
             'status':r[7],
             'comment':r[8],
         }
-    return render(request, 'travel/update_booking.html', {'context': context})
-    if request.method == "GET":
-        print("get")
-        return render(request, 'travel/update_booking.html')
+        return render(request, 'travel/update_booking.html', {'context': context})
+
+def update_booking(request):
+    if request.method == "POST":
+        post = request.POST
+        cursor = connection.cursor()
+        comment = request.POST.get("comment", "")
+        stmt = "SELECT u_id FROM Employee where username = '"+request.session['username']+"';"
+        cursor.execute(stmt)
+        e_id = cursor.fetchone()[0]
+        stmt  = "UPDATE book_room SET b_start_date = '"+str(post['check_in'])+"', b_end_date = '"+str(post['check_out'])+"', explanation = '"+comment+"', is_accepted = "+post['is_accepted']+", e_id = '"+str(e_id)+"' WHERE h_id = "+post['hotel_id']+" AND b_id = "+post['b_id']+" AND r_number = "+post['r_id']+";"
+        cursor.execute(stmt)
+        connection.commit()
+        cursor.close()
+        context = {
+
+        }
+        return HttpResponseRedirect(reverse('travel:manage_booking'))
 
 def login(request):
     if request.method == 'POST':
