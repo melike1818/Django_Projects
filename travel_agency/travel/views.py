@@ -70,17 +70,18 @@ def make_booking(request, pk):
         #get the h_id
         h_id = pk
         cursor = connection.cursor()
-        stmt = "SELECT * FROM room WHERE h_id = '"+str(h_id)+"';";
+        stmt = "SELECT * FROM room WHERE h_id = '"+str(h_id)+"';"
         cursor.execute(stmt)
         r = cursor.fetchall()
         print("Rooms")
         print(r)
-        stmt = "SELECT * FROM hotel WHERE h_id = '"+str(h_id)+"';";
+        stmt = "SELECT * FROM hotel WHERE h_id = '"+str(h_id)+"';"
         cursor.execute(stmt)
         h = cursor.fetchone()
         print("Hotel Info")
         print(h)
         return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h})
+
 def done_booking(request, pk, r_id):
     print(pk)
     print(r_id)
@@ -101,14 +102,13 @@ def done_booking(request, pk, r_id):
     connection.commit()
     return HttpResponse("Booking Successful! <a href='/'>Go to the Main Page</a>")
 
-
 def tour_reservation(request):
     if request.method == "GET":
 
         if 'Employee' in request.session:
-            stmt = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt = "SELECT t.t_id, t_start_location, t_description, t_start_date, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
-            stmt = "SELECT t_id, t_start_location, t_description, t_price  FROM tour; "
+            stmt = "SELECT t_id, t_start_location, t_description, t_start_date, t_price  FROM tour; "
 
         cursor = connection.cursor()
         cursor.execute(stmt)
@@ -123,29 +123,29 @@ def tour_reservation(request):
         desc = post["desc"]
         people = post["people"]
         if 'Employee' in request.session:
-            stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt2 = "SELECT t.t_id, t_start_location, t_description, t_start_date, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
-            stmt2 = "SELECT t_id, t_start_location, t_description, t_price  FROM tour; "
+            stmt2 = "SELECT t_id, t_start_location, t_description, t_start_date, t_price  FROM tour; "
 
-        if(startdate == None):
-            startdate = "'2021-12-25'"
+        if(startdate == ""):
+            startdate = '2022-01-01'
 
         if(enddate == ""):
             enddate = '2026-12-25'
 
         if(desc == ""):
-            desc = ' '
-            
+            desc = ''
+        
         if(location == ""):
-            stmt2 = "SELECT t_id, t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
+            stmt2 = "SELECT t_id, t_start_location, t_description, t_start_date, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'; "
         else:
-            stmt2 = "SELECT t_id, t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'"
+            stmt2 = "SELECT t_id, t_start_location, t_description, t_start_date, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_start_location like '%" + location + "%' and t_description like '%" + desc + "%'; "
 
         if 'Employee' in request.session:
             guide = post["guide"]
             #Filter by Guide
             if(str(guide) == "Assigned"):
-                stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id;"
+                stmt2 = "SELECT t.t_id, t_start_location, t_description, t_start_date, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id; "
 
             if(str(guide) == "Unassigned"):
                 stmt2 = "SELECT DISTINCT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
@@ -176,17 +176,26 @@ def assign_guide(request,pk):
         cursor.close()
         return render(request, 'travel/assign_guide.html', {'guides': r})
 
-
 def tour_details(request, pk):
     if request.method == "GET":
-        id = pk;
-        stmt = "SELECT * FROM tour WHERE t_id = '" + str(id)+"';";
+        stmt = "SELECT * FROM (SELECT a.* FROM tour natural join places_activities as p, activity as a WHERE p.a_id = a.a_id and t_id == '" + str(pk)+ "') natural left outer join (SELECT a.* FROM tour natural join places_activities as p, extra_activity as a WHERE p.a_id = a.a_id and t_id == '" + str(pk)+ "');"
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
+        stmt2 = "SELECT t_id, t_start_location, t_description, t_price, t_start_date, t_end_date, t_capacity FROM tour WHERE t_id == '" + str(pk)+ "'; "
+        cursor.execute(stmt2)
+        h = cursor.fetchone()
         cursor.close()
-        print(r)
-        return render(request, 'travel/Tour-details.html', {'tours': r})
+        context = {
+            't_id':h[0],
+            't_start_location':h[1],
+            't_description':h[2],
+            't_price':h[3],
+            't_start_date':h[4],
+            't_end_date':h[5],
+            't_capacity':h[6]
+        }
+        return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r})
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
@@ -381,7 +390,6 @@ def manage_reservation(request):
         r = cursor.fetchall()
         cursor.close()
         return render(request, 'travel/manage_reservation.html', {'reservations': r})
-
 
 def reservation_detail(request,t_id,e_id,c_id, r_id):
     if request.method == "POST":

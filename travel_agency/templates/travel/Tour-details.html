@@ -52,8 +52,16 @@
   <div class="container">
 
     <div class="tour_description">
-      <h1 class="t_name">{{tour.1}}</h1>
-        <p class="u-text u-text-2">Tour Description<br>{{hotel.3}}
+      <h1 class="t_name">Tour Details:</h1>
+        <p class="u-text u-text-2">Start Location: {{context.t_start_location}}
+        </p>
+        <p class="u-text u-text-2">Description: {{context.t_description}}
+        </p>
+        <p class="u-text u-text-2">Start Date: {{context.t_start_date}}, End Date: {{context.t_end_date}}
+        </p>
+        <p class="u-text u-text-2">Price: {{context.t_price}}
+        </p>
+        <p class="u-text u-text-2">Capacity: {{context.t_capacity}}
         </p>
     </div>
   </div>
@@ -61,29 +69,32 @@
 
 <section class="u-clearfix u-section-1" id="sec-6b16">
   <div class="container">
-    <table id="tours" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+    <table id="activities" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
     <thead>
       <tr>
-        <th class="th-sm">Activity
-        </th>
-        <th class="th-sm">Place
-        </th>
-        <th class="th-sm">Is Extra
-        </th>
-        <th class="th-sm">Price
+        <th class="th-sm">Activity Id
         </th>
         <th class="th-sm">Date
         </th>
-        <th class="th-sm">Phone Number
+        <th class="th-sm">Capacity
+        </th>
+        <th class="th-sm">Location
+        </th>
+        <th class="th-sm">Price
+        </th>
+        <th class="th-sm">Reserve
         </th>
       </tr>
     </thead>
-    {% for activities in tour %}
+    {% for activity in activities %}
     <tbody>
       <tr>
-          {% for value in activities %}
+          {% for value in activity %}
               <td class="th-sm">{{value}}</td>
           {% endfor %}
+          <td class="th-sm">
+            <button type="button" class="btn btn-dark" >Check Details</button>
+         </td>
       </tr>
     </tbody>
     {% endfor %}
