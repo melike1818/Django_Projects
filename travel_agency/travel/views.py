@@ -158,7 +158,6 @@ def tour_reservation(request):
 
 def assign_guide(request,pk):
     if request.method == "GET":
-        id = pk;
         stmt = "SELECT u_id, name FROM guide;"
         cursor = connection.cursor()
         cursor.execute(stmt)
@@ -167,15 +166,24 @@ def assign_guide(request,pk):
         return render(request, 'travel/assign_guide.html', {'guides': r})
     if request.method == "POST":
         post = request.POST
-        id = pk;
+        guide = post["guide"]
         stmt2 = "SELECT u_id, name FROM guide;"
-
+        #Filter by Guide
+        if(str(guide) == "All"):
+            stmt2 = "SELECT u_id, name FROM guide;"
+        if(str(guide) == "Available"):
+            stmt2 = "SELECT DISTINCT u_id, name FROM guide g, assign a WHERE g.u_id NOT IN (SELECT a.g_id FROM assign a);"
+        if(str(guide) == "Unavailable"):
+            #stmt2 = "SELECT g.u_id, name FROM guide g, assign a, tour t where t.t_id = '"+ str(pk) +"' AND t.t_start_date >= a.t_start_date and t.t_start_date <= a.t_end_date or t.t_end_date >= a.t_start_date and t.t_end_date <= a.t_end_date ;"
+            #stmt2 = "SELECT g.u_id, name FROM guide g, assign a, tour t where t.t_id = '"+ str(pk) +"' AND t.t_start_date > a.t_start_date or t.t_end_date < a.t_end_date;"
+            #stmt2 = "SELECT g.u_id, name FROM guide g, assign a, tour t where t.t_id = '"+ str(pk) +"' AND a.t_start_date BETWEEN (t.t_start_date >= a.t_start_date and t.t_start_date <= a.t_end_date) ;"
+            #stmt2 = "SELECT t.t_id, t.t_start_date FROM tour t where t.t_id = '"+ str(pk) +"' ;"
+            stmt2 = "SELECT DISTINCT g.u_id, name FROM guide g, assign a where g.u_id = a.g_id;"
         cursor = connection.cursor()
         cursor.execute(stmt2)
         r = cursor.fetchall()
         cursor.close()
         return render(request, 'travel/assign_guide.html', {'guides': r})
-
 
 def tour_details(request, pk):
     if request.method == "GET":
