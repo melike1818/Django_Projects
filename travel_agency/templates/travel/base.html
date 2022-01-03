@@ -126,6 +126,7 @@
                   {% endif %}
                   {% if 'Employee' in request.session%}
                     <a href="{% url 'travel:manage_booking' %}">Manage Booking</a>
+                    <a href="{% url 'travel:manage_reservation' %}">Manage Reservation</a>
                   {% endif %}
                     <a href="{% url 'travel:profile' %}"> My Profile</a>
                     <a href="{% url 'travel:logout' %}">Sign Out </a>

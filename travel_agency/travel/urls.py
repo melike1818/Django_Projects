@@ -11,9 +11,15 @@ urlpatterns = [
     path('flight/', views.flight_booking, name = 'flight'),
     path('previous/', views.previous_trips, name = 'previous'),
     path('friends/', views.friends, name = 'friends'),
+    # Booking( Employee )
     path('manage_booking/', views.manage_booking, name = 'manage_booking'),
     path('manage_booking/<int:b_id>/<int:h_id>/<int:r_id>', views.booking_detail, name = 'booking_detail'),
     path('manage_booking/update', views.update_booking, name = 'update_booking'),
+    # Reservation( Employee )
+    path('manage_reservation/', views.manage_reservation, name = 'manage_reservation'),
+    path('manage_reservation/<int:r_id>/<int:t_id>/<int:e_id>/<int:c_id>', views.reservation_detail, name = 'reservation_detail'),
+    path('manage_reservation/update', views.update_reservation, name = 'update_reservation'),
+
     path('tours/assign/<int:pk>', views.assign_guide, name = 'assign_guide'),
     path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('profile/', views.my_profile, name = 'profile'),

@@ -208,7 +208,7 @@ def manage_booking(request):
         cursor.execute(stmt)
         r = cursor.fetchall()
         cursor.close()
-        return render(request, 'travel/manage_reservations.html', {'reservations': r})
+        return render(request, 'travel/manage_booking.html', {'reservations': r})
     if request.method == "POST":
         post = request.POST
         check_in = post["check_in"]
@@ -221,7 +221,7 @@ def manage_booking(request):
         stmt1 = "SELECT b_id FROM book_room WHERE b_id = "+ res_code
         stmt2 = "SELECT b_id FROM book_room WHERE b_start_date = '"+ check_in +"' AND b_end_date = '" + check_out+"'"
         stmt3 = "SELECT b_id FROM book_room NATURAL JOIN evaluate_hotel WHERE h_rate = "+rating
-        stmt4 = "SELECT b_id FROM book_room NATURAL JOIN customer WHERE name = "+p_name
+        stmt4 = "SELECT b_id FROM book_room NATURAL JOIN customer WHERE name = '"+p_name+"'"
         if(res_code != ""):
             stmt = stmt1
             ok = True
@@ -253,7 +253,7 @@ def manage_booking(request):
         r = cursor.fetchall()
         cursor.close()
 
-        return render(request, 'travel/manage_reservations.html', {'reservations': r})
+        return render(request, 'travel/manage_booking.html', {'reservations': r})
 
 def booking_detail(request, b_id, h_id, r_id):
     if request.method == "POST":
@@ -290,6 +290,101 @@ def update_booking(request):
 
         }
         return HttpResponseRedirect(reverse('travel:manage_booking'))
+
+def manage_reservation(request):
+    if request.method == "GET":
+        stmt = "SELECT * FROM reserves"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        print(r)
+        return render(request, 'travel/manage_reservation.html', {'reservations': r})
+    else:
+        post = request.POST
+        check_in = post["check_in"]
+        check_out = post["check_out"]
+        res_code = post["res_code"]
+        rating = post["rating"]
+        p_name = post["p_name"]
+        ok = False
+        stmt = ""
+        stmt1 = "SELECT t_id FROM reserves WHERE t_id = "+ res_code
+        stmt2 = "SELECT t_id FROM reserves WHERE t_start_date = '"+ check_in +"' AND t_end_date = '" + check_out+"'"
+        stmt3 = "SELECT t_id FROM reserves NATURAL JOIN evaluate_tour WHERE t_rate = "+rating
+        stmt4 = "SELECT t_id FROM reserves AS r JOIN customer AS c ON c.u_id = r.c_id WHERE name = '"+p_name+"'"
+        if(res_code != ""):
+            stmt = stmt1
+            ok = True
+        if(check_in != "" and check_out != ""):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt2+")"
+            else:
+                stmt = stmt2
+                ok = True
+        if(rating != "Rating"):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt3+")"
+            else:
+                stmt = stmt3
+                ok = True
+        if(p_name != ""):
+            if(ok):
+                stmt ="SELECT * FROM ("+stmt+") NATURAL JOIN ("+stmt4+")"
+            else:
+                stmt = stmt4
+                ok = True
+        if(ok):
+            stmt = "SELECT * FROM reserves where t_id IN("+stmt+");"
+
+        else:
+            stmt = "SELECT * FROM reserves"
+        print(stmt)
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/manage_reservation.html', {'reservations': r})
+
+
+def reservation_detail(request,t_id,e_id,c_id, r_id):
+    if request.method == "POST":
+        stmt = "SELECT * FROM reserves WHERE r_id = "+str(r_id)+" AND t_id = "+str(t_id)+" AND c_id = "+str(c_id)+" AND e_id = "+str(e_id)+";"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchone()
+        cursor.close()
+        context = {
+            'r_id':r[0],
+            't_id':r[1],
+            'start':r[2],
+            'end':r[3],
+            'e_id':r[4],
+            'c_id':r[5],
+            'comment':r[6],
+            'status':r[7]
+        }
+        return render(request, 'travel/reservation_detail.html', {'context': context})
+
+def update_reservation(request):
+    if request.method == "POST":
+            post = request.POST
+            cursor = connection.cursor()
+            comment = request.POST.get("comment", "")
+            stmt = "SELECT u_id FROM Employee where username = '"+request.session['username']+"';"
+            cursor.execute(stmt)
+            e_id = cursor.fetchone()[0]
+            #######################################################################
+            # e_id SHOULDN'T be a primary key in reserves, as it is not in book_room #
+            #######################################################################
+            stmt  = "UPDATE reserves SET t_start_date = '"+str(post['check_in'])+"', t_end_date = '"+str(post['check_out'])+"', explanation = '"+comment+"', is_accepted = "+post['is_accepted']+" WHERE t_id = "+post['t_id']+" AND r_id = "+post['r_id']+" AND c_id = "+post['c_id']+";"
+            cursor.execute(stmt)
+            connection.commit()
+            cursor.close()
+            context = {
+
+            }
+            return HttpResponseRedirect(reverse('travel:manage_booking'))
 
 def login(request):
     if request.method == 'POST':
