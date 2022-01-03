@@ -1,11 +1,191 @@
 {% extends "travel/base.html" %}
 {% block body_block %}
 
-<div class="container">
-  <div class="jumbotron">
-    <h1>This is previous trips</h1>
-  </div>
-  {{previous_trips}}
+<style type="text/css">
+.Accepted{
+  color: #ebfdff;
+  background-color: #58cf23;
+  opacity: 0.8;
+  text-align: center;
+}
+.Denied{
+  color: #ebfdff;
+  background-color: #d52525;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.Waiting{
+  color: #ebfdff;
+  background-color: #dcb612;
+  opacity: 0.8;
+  text-align: center;
+}
+#jumboHotel {
+  padding: 20px;
+  background-color: #d9ed92
+}
+
+#jumboTour {
+  padding: 20px;
+  background-color: #ffcdb2
+}
+
+#jumboFlight {
+  padding: 20px;
+  background-color: #d9ed92
+}
+</style>
+<div class="jumbotron" id = "jumboHotel">
+<div class="list-group">
+  <h2 class="Accepted" >Accepted Hotel Bookings</h2>
+  {% if a_hotel_booking|length == 0 %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">No accepted hotel booking yet</h5>
+    </div>
+  </a>
+  {% endif %}
+  {% for hotel in a_hotel_booking %}
+  <a href="{% url 'travel:give_feedback' pk=hotel.0 %}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{hotel.10}}</h5>
+      <small>Booking Date: {{hotel.1}} - {{hotel.2}} </small>
+      <br>
+      <small>Number of People: {{hotel.3}}</small>
+      <br>
+      <small>Room Number: {{hotel.7}}</small>
+    </div>
+  </a>
+  {% endfor %}
 </div>
 
+<div class="list-group">
+  <h2 class="Denied" >Denied Hotel Bookings</h2>
+  {% if d_hotel_booking|length == 0 %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">No denied hotel booking yet</h5>
+    </div>
+  </a>
+  {% endif %}
+  {% for hotel in d_hotel_booking %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{hotel.10}}</h5>
+      <small>Booking Date: {{hotel.1}} - {{hotel.2}} </small>
+      <br>
+      <small>Number of People: {{hotel.3}}</small>
+      <br>
+      <small>Room Number: {{hotel.7}}</small>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="list-group">
+  <h2 class="Waiting" >Waiting Hotel Bookings</h2>
+  {% if w_hotel_booking|length == 0 %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">No waiting hotel booking yet</h5>
+    </div>
+  </a>
+  {% endif %}
+  {% for hotel in w_hotel_booking %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{hotel.10}}</h5>
+      <small>Booking Date: {{hotel.1}} - {{hotel.2}} </small>
+      <br>
+      <small>Number of People: {{hotel.3}}</small>
+      <br>
+      <small>Room Number: {{hotel.7}}</small>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+</div>
+
+<div class="jumbotron" id = "jumboTour">
+<div class="list-group">
+  <h2 class="Accepted" >Accepted Tour Reservations</h2>
+  {% if a_tour|length == 0 %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">No accepted tour reservation yet</h5>
+    </div>
+  </a>
+  {% endif %}
+  {% for tour in a_tour %}
+  <a href="{% url 'travel:give_feedback' pk=tour.0 %}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{tour.1}} Tour</h5>
+      <small>Reservation Date: {{tour.2}} - {{tour.3}} </small>
+      <br>
+      <small>Number of People: {{tour.17}}</small>
+      <br>
+      <small>Tour start location: {{tour.4}}</small>
+      <br>
+      <small>Price: {{tour.6}}</small>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="list-group">
+  <h2 class="Denied" >Denied Tour Reservations</h2>
+  {% if d_tour|length == 0 %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">No denied tour reservation yet</h5>
+    </div>
+  </a>
+  {% endif %}
+  {% for tour in d_tour %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{tour.1}} Tour</h5>
+      <small>Reservation Date: {{tour.2}} - {{tour.3}} </small>
+      <br>
+      <small>Number of People: {{tour.17}}</small>
+      <br>
+      <small>Tour start location: {{tour.4}}</small>
+      <br>
+      <small>Price: {{tour.6}}</small>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<div class="list-group">
+  <h2 class="Waiting" >Waiting Tour Reservations</h2>
+  {% if w_tour|length == 0 %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">No waiting tour reservation yet</h5>
+    </div>
+  </a>
+  {% endif %}
+  {% for tour in w_tour %}
+  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{tour.1}} Tour</h5>
+      <small>Reservation Date: {{tour.2}} - {{tour.3}} </small>
+      <br>
+      <small>Number of People: {{tour.17}}</small>
+      <br>
+      <small>Tour start location: {{tour.4}}</small>
+      <br>
+      <small>Price: {{tour.6}}</small>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+</div>
+{% block js %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock js %}
 {% endblock %}

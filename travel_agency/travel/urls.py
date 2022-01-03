@@ -11,6 +11,7 @@ urlpatterns = [
     path('tours/details/<int:pk>', views.tour_details, name = 'tour_details'),
     path('flight/', views.flight_booking, name = 'flight'),
     path('previous/', views.previous_trips, name = 'previous'),
+    path('previous/<int:pk>', views.give_feedback, name = 'give_feedback'),
     path('friends/', views.friends, name = 'friends'),
     path('manage_reservations/', views.manage_reservations, name = 'manage_reservations'),
     path('manage_reservations/<int:b_id>/<int:h_id>/<int:r_id> r', views.update_booking, name = 'update_booking'),

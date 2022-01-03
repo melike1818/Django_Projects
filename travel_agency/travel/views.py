@@ -182,13 +182,39 @@ def tour_details(request, pk):
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
 
+def give_feedback(request, pk):
+    return render(request, 'travel/Give_feedback.html')
+
 def previous_trips(request):
     cursor = connection.cursor()
-    stmt = "SELECT * FROM book_room NATURAL JOIN customer WHERE c_id = '"+ request.session['username']+"';"
-    cursor.execute(stmt)
-    r = cursor.fetchone()
+    #Hotel Bookings
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = true AND b_end_date < '2022-01-10';"
+    cursor.execute(stmt, [request.session['u_id']] )
+    a_b = cursor.fetchall()
+
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = false AND b_end_date < '2022-01-10';"
+    cursor.execute(stmt, [request.session['u_id']] )
+    d_b = cursor.fetchall()
+
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted IS NULL AND b_end_date < '2022-01-10';"
+    cursor.execute(stmt, [request.session['u_id']] )
+    w_b = cursor.fetchall()
+
+    #Tours
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = true AND t_end_date < '2022-01-10';"
+    cursor.execute(stmt, [request.session['u_id']] )
+    a_t = cursor.fetchall()
+
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = false AND t_end_date < '2022-01-10';"
+    cursor.execute(stmt, [request.session['u_id']] )
+    d_t = cursor.fetchall()
+
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted IS NULL AND t_end_date < '2022-01-10';"
+    cursor.execute(stmt, [request.session['u_id']] )
+    w_t = cursor.fetchall()
+
     cursor.close()
-    return render(request, 'travel/Previous-Trips.html', {'previous_trips': r})
+    return render(request, 'travel/Previous-Trips.html', {'a_hotel_booking': a_b , 'd_hotel_booking' : d_b, 'w_hotel_booking' : w_b, 'a_tour': a_t , 'd_tour' : d_t, 'w_tour' : w_t})
 
 def friends(request):
     return render(request, 'travel/Friends.html')
@@ -197,9 +223,9 @@ def my_profile(request):
     cursor = connection.cursor()
     stmt = "SELECT * FROM "+request.session['type']+" WHERE username = '"+ request.session['username']+"';"
     cursor.execute(stmt)
-    r = cursor.fetchone()
+    p = cursor.fetchone()
     cursor.close()
-    return render(request, 'travel/My-Profile.html', {'profile': r})
+    return render(request, 'travel/My-Profile.html', {'profile': p})
 
 #Only for Employee
 def manage_reservations(request):

@@ -1,9 +1,243 @@
 {% extends "travel/base.html" %}
 {% block body_block %}
+<style type="text/css">
+  body {
+  background: #F1F3FA;
+}
 
+/* Profile container */
+.profile {
+  margin: 20px 0;
+}
+
+/* Profile sidebar */
+.profile-sidebar {
+  padding: 20px 0 10px 0;
+  background: #fff;
+  border-radius: .25rem;
+}
+
+.profile-userpic img {
+  float: none;
+  margin: 0 auto;
+  width: 50%;
+  height: 50%;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  border-radius: 50% !important;
+}
+
+.profile-usertitle {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.profile-usertitle-name {
+  color: #5a7391;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 7px;
+}
+
+.profile-usertitle-job {
+  text-transform: uppercase;
+  color: #5b9bd1;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.profile-userbuttons {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.profile-userbuttons .btn {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 15px;
+  margin-right: 5px;
+}
+
+.profile-userbuttons .btn:last-child {
+  margin-right: 0px;
+}
+
+.profile-usermenu {
+  margin-top: 30px;
+}
+
+.profile-usermenu ul li {
+  border-bottom: 1px solid #f0f4f7;
+}
+
+.profile-usermenu ul li:last-child {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li a {
+  color: #93a3b5;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.profile-usermenu ul li a i {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.profile-usermenu ul li a:hover {
+  background-color: #fafcfd;
+  color: #5b9bd1;
+}
+
+.profile-usermenu ul li.active {
+  border-bottom: none;
+}
+
+.profile-usermenu ul li.active a {
+  color: #5b9bd1;
+  background-color: #f6f9fb;
+  border-left: 2px solid #5b9bd1;
+  margin-left: -2px;
+}
+
+/* Profile Content */
+.profile-content {
+  position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1rem;
+}
+  </style>
 <div class="container">
-  <div class="jumbotron">
-    <h1>{{profile}}</h1>
+    <div class="row profile">
+		<div class="col-md-3">
+			<div class="profile-sidebar">
+				<!-- SIDEBAR USERPIC -->
+				<div class="profile-userpic">
+					<img src="https://static.change.org/profile-img/default-user-profile.svg" class="img-responsive" alt="">
+				</div>
+				<!-- END SIDEBAR USERPIC -->
+				<!-- SIDEBAR USER TITLE -->
+				<div class="profile-usertitle">
+					<div class="profile-usertitle-name">
+						{{profile.1}}
+					</div>
+				</div>
+				<!-- END SIDEBAR USER TITLE -->
+				<!-- SIDEBAR BUTTONS -->
+				<div class="profile-userbuttons">
+					<button type="button" class="btn btn-danger btn-sm">Delete Profile</button>
+				</div>
+				<!-- END SIDEBAR BUTTONS -->
+				<!-- SIDEBAR MENU -->
+				<div class="profile-usermenu">
+					<ul class="nav">
+						<li class="active">
+							<a href="#">
+							<i class="glyphicon glyphicon-home"></i>
+							Overview </a>
+						</li>
+						<li>
+							<a href="#">
+							<i class="glyphicon glyphicon-user"></i>
+							Account Settings </a>
+						</li>
+						<li>
+							<a href="{% url 'travel:previous' %}">
+							<i class="glyphicon glyphicon-ok"></i>
+							Previous Trips </a>
+						</li>
+						<li>
+							<a href="#">
+							<i class="glyphicon glyphicon-flag"></i>
+							Help </a>
+						</li>
+					</ul>
+				</div>
+				<!-- END MENU -->
+			</div>
+		</div>
+		<div class="col-md-9">
+            <div class="profile-content">
+              <div class="col-md-8">
+                   <div class="card mb-3">
+                     <div class="card-body">
+                       <div class="row">
+                         <div class="col-sm-3">
+                           <h6 class="mb-0">Full Name</h6>
+                         </div>
+                         <div class="col-sm-9 text-secondary">
+                           {{profile.1}}
+                         </div>
+                       </div>
+                       <hr>
+                       <div class="row">
+                         <div class="col-sm-3">
+                           <h6 class="mb-0">Username</h6>
+                         </div>
+                         <div class="col-sm-9 text-secondary">
+                           {{profile.2}}
+                         </div>
+                       </div>
+                       <hr>
+                       <div class="row">
+                         <div class="col-sm-3">
+                           <h6 class="mb-0">Mobile</h6>
+                         </div>
+                         <div class="col-sm-9 text-secondary">
+                           {{profile.8}}
+                         </div>
+                       </div>
+                       <hr>
+                       <div class="row">
+                         <div class="col-sm-3">
+                           <h6 class="mb-0">Address</h6>
+                         </div>
+                         <div class="col-sm-9 text-secondary">
+                           {{profile.4}}
+                         </div>
+                       </div>
+                       <hr>
+                       <div class="row">
+                         <div class="col-sm-3">
+                           <h6 class="mb-0">Birth Date</h6>
+                         </div>
+                         <div class="col-sm-9 text-secondary">
+                           {{profile.3}}
+                         </div>
+                       </div>
+                       <hr>
+                       <div class="row">
+                         <div class="col-sm-3">
+                           <h6 class="mb-0">Gender</h6>
+                         </div>
+                         <div class="col-sm-9 text-secondary">
+                           {{profile.5}}
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+            </div>
+		</div>
+	</div>
 </div>
-
+{% block js %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+{% endblock js %}
 {% endblock %}
