@@ -119,6 +119,8 @@
         </th>
         <th class="th-sm">Description
         </th>
+        <th class="th-sm">Start Date
+        </th>
         <th class="th-sm">Price
         </th>
         <th class="th-sm">Details
@@ -169,7 +171,7 @@
                     <td class="th-sm">{{value}}</td>
                     {% else %}
                         <td class="th-sm">
-                            <button type="button" class="btn btn-dark" action="{% url 'travel:assign_guide' tour.0 %}">Assign Guide</button>
+                            <button type="button" class="btn btn-dark" onclick="window.location.href='{% url 'travel:assign_guide' tour.0 %}'">Assign Guide</button>
                         </td>
                     {% endif %}
                 {% endfor %}
