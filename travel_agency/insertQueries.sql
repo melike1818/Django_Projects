@@ -27,9 +27,9 @@ VALUES
        (4, 'melike', 'melike', null, '123', null),
        (5, 'can', 'can', null, '123', null);
 
-INSERT INTO customer (u_id, name, username, phone, pw, e_salary)
+INSERT INTO customer (u_id, name, username, c_bdate, c_address, c_sex, c_wallet, pw, phone)
 VALUES
-       (6, 'ırmo', 'iii', null, null, null, 10000, 'asdf', null),
+       (6, 'ırmo', 'iii', null, null, 'female', 10000, 'asdf', null);
 
 INSERT INTO assign (t_id, t_start_date, t_end_date, g_id, e_id, accepted)
 VALUES
