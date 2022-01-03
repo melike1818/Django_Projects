@@ -8,11 +8,12 @@ urlpatterns = [
     path('hotels/<int:pk>', views.make_booking, name = 'make_booking'),
     path('tours/', views.tour_reservation, name = 'tours'),
     path('tours/details/<int:pk>', views.tour_details, name = 'tour_details'),
+
     path('flight/', views.flight_booking, name = 'flight'),
     path('previous/', views.previous_trips, name = 'previous'),
     path('previous/<int:pk>', views.give_feedback, name = 'give_feedback'),
     path('friends/', views.friends, name = 'friends'),
-    # Booking( Employee )
+    # Edit Booking( Employee )
     path('manage_booking/', views.manage_booking, name = 'manage_booking'),
     path('manage_booking/<int:b_id>/<int:h_id>/<int:r_id>', views.booking_detail, name = 'booking_detail'),
     path('manage_booking/update', views.update_booking, name = 'update_booking'),
