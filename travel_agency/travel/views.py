@@ -48,7 +48,7 @@ def hotel_booking(request):
 
         # Filter by rating
         if(str(rating) != "Select Minimum Rating For Hotel" and location == ""):
-            stmt1 ="SELECT * FROM(SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE" + " h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+") WHERE h_id IN (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating +");" 
+            stmt1 ="SELECT * FROM(SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE" + " h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+") WHERE h_id IN (SELECT h_id FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id) WHERE h_rate_unq>=" + rating +");"
         # Filter by location and availibility
         if(location != "" and str(rating) == "Select Minimum Rating For Hotel") :
             stmt1 = "SELECT * FROM (SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity - res_room FROM hotel AS H NATURAL JOIN( SELECT h_id, COUNT(b_id) AS res_room FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"' GROUP BY h_id) WHERE h_capacity - res_room >= "+ people +" UNION SELECT h_id, h_name, h_address, h_phone, h_capacity, h_capacity FROM hotel WHERE" + " h_id NOT IN ( SELECT h_id FROM book_room  where b_start_date <= '"+ check_out +"' AND b_end_date >= '" + check_in +"') AND h_capacity >= "+ people+") WHERE h_id IN (SELECT h_id FROM hotel WHERE h_address LIKE '%" + location + "%');"
@@ -80,27 +80,77 @@ def make_booking(request, pk):
         h = cursor.fetchone()
         print("Hotel Info")
         print(h)
-        return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h})
-def done_booking(request, pk, r_id):
-    print(pk)
-    print(r_id)
-    print(request.session['u_id'])
-    print(request.session['check_in'])
-    print(request.session['check_out'])
-    print(request.session['no_people'])
-    cursor = connection.cursor()
-    b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
-    b_id = b_id + 1
-    #Insert into booking Table
-    parameters = [b_id, request.session['check_in'], request.session['check_out'], request.session['no_people']]
-    cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
-    #Insert into book_room table
-    parameters = [b_id, pk, request.session['check_in'], request.session['check_out'], request.session['u_id'], r_id]
-    cursor.execute("INSERT INTO book_room (b_id, h_id, b_start_date, b_end_date,c_id, r_number) VALUES(%s,%s,%s,%s,%s,%s);", parameters)
-    cursor.close()
-    connection.commit()
-    return HttpResponse("Booking Successful! <a href='/'>Go to the Main Page</a>")
 
+        if 'Customer' in request.session:
+            u = 0
+        if 'Employee' in request.session:
+            u = 1
+        print(u)
+        return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h, "user" : u})
+def done_booking(request, pk, r_id):
+    if request.method == 'POST':
+        if 'Employee' in request.session:
+            #make booking accordingly
+            cursor = connection.cursor()
+            c_id = (cursor.execute("SELECT u_id FROM customer WHERE username = '" + request.POST.get("name", "") + "';")).fetchone()[0]
+
+            print(c_id)
+            b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+            b_id = b_id + 1
+            parameters = [b_id,request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+            print(parameters)
+
+            cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 'true', 'created by employee']
+            cursor.execute("INSERT INTO book_room VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);", parameters)
+            cursor.close()
+            connection.commit()
+
+        if 'Customer' in request.session:
+            cursor = connection.cursor()
+            b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+            b_id = b_id + 1
+            #Insert into booking Table
+            parameters = [b_id, request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+            cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+            #Insert into book_room table
+            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.session['u_id'], r_id]
+            cursor.execute("INSERT INTO book_room (b_id, h_id, b_start_date, b_end_date,c_id, r_number) VALUES(%s,%s,%s,%s,%s,%s);", parameters)
+            cursor.close()
+            connection.commit()
+    cursor = connection.cursor()
+    cursor.execute("SELECT h_name from hotel where h_id =" + str(pk)+";")
+    h = cursor.fetchone()
+    cursor.execute("SELECT bed_capacity from room where h_id =" + str(pk) + " AND r_number = " + str(r_id)+";")
+    m = cursor.fetchone()
+    cursor.close()
+    return render(request, 'travel/done_booking.html', {'hname' : h, 'room' : r_id, 'max': m})
+
+def done_booking_e(request, pk, r_id):
+    if request.method == 'POST':
+        #make booking accordingly
+        cursor = connection.cursor()
+        c_id = (cursor.execute("SELECT u_id FROM customer WHERE username = '" + request.POST.get("name", "") + "';")).fetchone()[0]
+
+        print(c_id)
+        b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+        b_id = b_id + 1
+        parameters = [b_id,request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+        print(parameters)
+
+        cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+        parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 'true', 'created by employee']
+        cursor.execute("INSERT INTO book_room VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);", parameters)
+        cursor.close()
+        connection.commit()
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT h_name from hotel where h_id =" + str(pk)+";")
+    h = cursor.fetchone()
+    cursor.execute("SELECT bed_capacity from room where h_id =" + str(pk) + " AND r_number = " + str(r_id)+";")
+    m = cursor.fetchone()
+    cursor.close()
+    return render(request, 'travel/done_booking_e.html', {'hname' : h, 'room' : r_id, 'max': m})
 
 def tour_reservation(request):
     if request.method == "GET":
@@ -113,6 +163,7 @@ def tour_reservation(request):
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
+        print(r)
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})
     if request.method == "POST":
@@ -135,7 +186,7 @@ def tour_reservation(request):
 
         if(desc == ""):
             desc = ' '
-            
+
         if(location == ""):
             stmt2 = "SELECT t_id, t_start_location, t_description, t_price FROM tour WHERE t_start_date >= '" + startdate + "' and t_end_date <= '" + enddate + "' and t_capacity >= " + people + " and t_description like '%" + desc + "%'"
         else:
@@ -158,14 +209,34 @@ def tour_reservation(request):
 
 def assign_guide(request,pk):
     if request.method == "GET":
-        id = 1
-        stmt = "SELECT * FROM tour WHERE t_id = " + str(id);
+        t_id = pk
+        stmt = "SELECT u_id, name FROM guide;"
         cursor = connection.cursor()
         cursor.execute(stmt)
-        r = cursor.fetchall()
+        g = cursor.fetchall()
+        print(g)
         cursor.close()
-        print(r)
-        return render(request, 'travel/tour/assign_guide.html', {'tours': r})
+        return render(request, 'travel/assign_guide.html', {'guides': g})
+    if request.method == "POST":
+        post = request.POST
+        guide = post["guide"]
+        t_id = pk
+        #Filter by Availability
+        if(str(guide) == "All"):
+            stmt2 = "SELECT u_id, name FROM guide;"
+
+        if(str(guide) == "Available"):
+            stmt2 = "SELECT t_id, '' FROM tour t where t_id = t.t_id ;"
+
+        if(str(guide) == "Unavailable"):
+            stmt2 = "SELECT DISTINCT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+
+        cursor = connection.cursor()
+        cursor.execute(stmt2)
+        g = cursor.fetchall()
+        print(g)
+        cursor.close()
+        return render(request, 'travel/assign_guide', {'guides': g})
 
 def tour_details(request, pk):
     if request.method == "GET":
@@ -187,28 +258,28 @@ def give_feedback(request, pk):
 def previous_trips(request):
     cursor = connection.cursor()
     #Hotel Bookings
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = true AND b_end_date < '2022-01-10';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = 'true' AND b_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     a_b = cursor.fetchall()
 
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = false AND b_end_date < '2022-01-10';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = 'false' AND b_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     d_b = cursor.fetchall()
-
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted IS NULL AND b_end_date < '2022-01-10';"
+    print(d_b)
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted IS NULL AND b_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     w_b = cursor.fetchall()
 
     #Tours
-    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = true AND t_end_date < '2022-01-10';"
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = 'true' AND t_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     a_t = cursor.fetchall()
 
-    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = false AND t_end_date < '2022-01-10';"
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = 'false' AND t_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     d_t = cursor.fetchall()
 
-    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted IS NULL AND t_end_date < '2022-01-10';"
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted IS NULL AND t_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     w_t = cursor.fetchall()
 
