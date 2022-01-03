@@ -1,0 +1,186 @@
+{% extends "travel/base.html" %}
+{% block body_block %}
+<style>
+	.th-sm{
+    background: white;
+  }
+  .search-sec{
+    padding: 2rem;
+  }
+  .container{
+    padding: 2rem;
+  }
+  .search-slt{
+      display: block;
+      width: 100%;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #55595c;
+      background-color: #fff;
+      background-image: none;
+      border: 1px solid #ccc;
+      height: calc(3rem + 2px) !important;
+      border-radius:0;
+  }
+  .wrn-btn{
+      width: 100%;
+      font-size: 16px;
+      font-weight: 400;
+      text-transform: capitalize;
+      height: calc(3rem + 2px) !important;
+      border-radius:0;
+  }
+  @media (min-width: 992px){
+      .search-sec{
+          position: relative;
+          top: -114px;
+          background: rgba(26, 70, 104, 0.51);
+      }
+  }
+
+  @media (max-width: 992px){
+      .search-sec{
+          background: #1A4668;
+      }
+  }
+</style>
+<section class="u-clearfix u-section-1" id="sec-6b16">
+  <div class="container">
+  <form action ="#"  name = "search-form" onsubmit="return validateForm()" method="post" novalidate="novalidate">
+    {% csrf_token %}
+    <div class = "column">
+      <div class = "row">
+          <div class="col-sm-6 col-lg-6 p-0">
+             <input type="search" class="form-control search-slt" placeholder="Reservation Code" name="res_code" id="res_code">
+          </div>
+          <div class="col-sm-6 col-lg-6 p-0">
+             <input type="search" class="form-control search-slt" placeholder="Passenger Name" name="p_name" id="p_name">
+          </div>
+      </div>
+      <div class = "row">
+        <div class="col-sm-4 col-lg-4 p-2">
+          <input type="date" class="form-control" name="check_in" id="check_in" required/>
+        </div>
+        <div class="col-sm-4 col-lg-4 p-2">
+            <input type="date" class="form-control" name="check_out" id="check_out" required />
+        </div>
+        <div class="col-sm-4 col-lg-4 p-0">
+          <select class="form-control search-slt" name= "rating" id="exampleFormControlSelect1">
+            <option>Rating</option>
+             <option>1</option>
+             <option>2</option>
+             <option>3</option>
+             <option>4</option>
+             <option>5</option>
+          </select>
+        </div>
+      </div>
+      <div class = "row">
+          <div class="col-sm-12 col-lg-12 p-0">
+             <button type="submit" class="btn btn-danger wrn-btn">Search</button>
+          </div>
+      </div>
+    </div>
+  </form>
+  </div>
+</section>
+<section class="u-clearfix u-section-1" id="sec-6b16">
+  <div class="container">
+  <table id="res-table" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th class="th-sm">Reservation Code
+
+      </th>
+      <th class="th-sm">Tour ID
+
+      </th>
+      <th class="th-sm">Start Date
+
+      </th>
+
+      <th class="th-sm">End Date
+
+      </th>
+      <th class="th-sm">Employee ID
+
+      </th>
+      <th class="th-sm">Customer ID
+
+      </th>
+      <th class="th-sm">Comment
+
+      </th>
+      <th class="th-sm">Status
+
+      </th>
+      <th class="th-sm">Detail
+
+      </th>
+
+    </tr>
+  </thead>
+  <!--Display data -->
+  {% for res in reservations %}
+  <tbody>
+    <tr>
+      {% for value in res %}
+        {% if value != None%}
+          <td class="th-sm">{{value}}</td>
+        {% else %}
+          <td class="th-sm">Unknown</td>
+        {% endif %}
+      {% endfor %}
+      <td class="th-sm">
+        <form action="{% url 'travel:reservation_detail' res.0 res.1 res.4 res.5 %}" method = "POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-dark">Edit</button>                    
+        </form>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+</div>
+</section>
+
+
+
+{% endblock %}
+{% block js %}
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+    <script>
+        $(document).ready(function () {
+        $('#hotel-table').DataTable( {
+            "paging": true,
+            "searching": true,
+            "autoWidth": false,
+            "ordering": true,
+            "columnDefs": [
+                {"width": "50px", "targets": 0},
+                {"width": "250px", "targets": 1},
+            ],
+        }
+        );
+    } );
+    function validateForm() {
+
+      let check_in = document.forms["search-form"]["check_in"].value;
+      let check_out = document.forms["search-form"]["check_out"].value;
+      let people = document.forms["search-form"]["number"].value;
+      if (check_in == "") {
+        alert("Check in must be filled out");
+        return false;
+      }
+      if (check_out == "") {
+        alert("Check out must be filled out");
+        return false;
+      }
+      if (people == "") {
+        alert("Guest number in must be filled out");
+        return false;
+      }
+    }
+    </script>
+    {% endblock js %}

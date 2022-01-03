@@ -13,27 +13,27 @@
 </style>
 <div class="container">
   <div class="jumbotron">
-    <h1>Editing Reservation {{context.res_code}}</h1>
+    <h1>Editing Reservation {{context.r_id}}</h1>
   </div>
   <!-- A form will appear here -->
-  	 <form action="{% url 'travel:update_booking'  %}" method="POST" class="u-clearfix u-form-custom-backend u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 10px;">
+  	 <form action="{% url 'travel:update_reservation'  %}" method="POST" class="u-clearfix u-form-custom-backend u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 10px;">
   	 {% csrf_token %}
   	 <div class = "column">
   	 <div class = "row">
-        <input type = "hidden" name = "b_id" id = "b_id" value = {{context.res_code}}>
-  	 		 <label style="color:teal;font-weight:500;">Hotel ID: </label>
-        <label style="color:teal;font-weight:500;"><input type="hidden" class="form-control" value = {{context.hotel_id}} name="hotel_id" id="hotel_id">{{context.hotel_id}}</label> 
-        	 <label style="color:teal;font-weight:500;">Customer ID: </label>
+        <input type = "hidden" name = "r_id" id = "r_id" value = {{context.r_id}}>
+  	 		 <label style="color:teal;font-weight:500;">Tour ID: </label>
+        <label style="color:teal;font-weight:500;"><input type="hidden" class="form-control" value = {{context.t_id}} name="t_id" id="t_id">{{context.t_id}}</label> 
+        	 <label style="color:teal;font-weight:500;">Employee ID: </label>
+           <label style="color:teal;font-weight:500;"><input type="hidden" class="form-control" value = {{context.e_id}} name="e_id" id="e_id">{{context.e_id}}</label> 
+        	 <label style="color:teal;font-weight:500;">Customer Number: </label>
            <label style="color:teal;font-weight:500;"><input type="hidden" class="form-control" value = {{context.c_id}} name="c_id" id="c_id">{{context.c_id}}</label> 
-        	 <label style="color:teal;font-weight:500;">Room Number: </label>
-           <label style="color:teal;font-weight:500;"><input type="hidden" class="form-control" value = {{context.r_id}} name="r_id" id="r_id">{{context.r_id}}</label> 
   	 </div>
   	 <div class="col-sm-6 col-lg-6 p-1">
-  	 	  <label style="color:teal;font-weight:500;">Check In Is {{context.start}}</label>
+  	 	  <label style="color:teal;font-weight:500;">Start Date Is {{context.start}}</label>
           <input type="date" class="form-control" name="check_in" id="check_in" required/>
      </div>
      <div class="col-sm-6 col-lg-6 p-1">
-        	<label style="color:teal;font-weight:500;">Check Out Is {{context.end}}</label>
+        	<label style="color:teal;font-weight:500;">End Date Is {{context.end}}</label>
             <input type="date" class="form-control" name="check_out" id="check_out" required />
      </div>
   	 	{% if context.status != None %}
@@ -41,7 +41,8 @@
         <br>
         {% if context.status == 1%}
                 <h5 style="color:teal;font-weight:500;"> Status: Accepted</h5>
-        {% else %}
+        {% endif %}
+        {% if context.status == 0%}
                 <h5 style="color:teal;font-weight:500;"> Status: Rejected</h5>
         {% endif %}
         <h5 style="color:teal;font-weight:500;"> Comment: {{context.comment}}</h5>
