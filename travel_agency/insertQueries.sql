@@ -21,15 +21,15 @@ VALUES
 
 INSERT INTO employee (u_id, name, username, phone, pw, e_salary)
 VALUES
-       (1, 'tanay', 'tanay', null, '123', null),
-       (2, 'kimya', 'kimya', null, '123', null),
-       (3, 'ırmak', 'ırmak', null, '123', null),
-       (4, 'melike', 'melike', null, '123', null),
-       (5, 'can', 'can', null, '123', null);
+       (7, 'tanay', 'tanay', null, '123', null),
+       (8, 'kimya', 'kimya', null, '123', null),
+       (9, 'ırmak', 'ırmak', null, '123', null),
+       (10, 'melike', 'melike', null, '123', null),
+       (11, 'can', 'can', null, '123', null);
 
 INSERT INTO customer (u_id, name, username, c_bdate, c_address, c_sex, c_wallet, pw, phone)
 VALUES
-       (6, 'ırmo', 'iii', null, null, 'female', 10000, 'asdf', null);
+       (12, 'ırmo', 'iii', null, null, 'female', 10000, 'asdf', null);
 
 INSERT INTO assign (t_id, t_start_date, t_end_date, g_id, e_id, accepted)
 VALUES
@@ -66,7 +66,7 @@ INSERT INTO extra_activity (a_id, a_date, price)
 VALUES 
        ('9', '2022-01-05', '10');
 
-INSERT INTO extra_activity (p_id, p_name, p_location) 
+INSERT INTO place (p_id, p_name, p_location)
 VALUES 
        ('1', 'loc1', 'loc1'),
        ('2', 'loc2', 'loc2');
