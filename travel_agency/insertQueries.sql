@@ -32,3 +32,27 @@ VALUES
        (3, '2022-01-05', '2022-01-06', 2, 2, null),
        (4, '2022-01-04', '2022-01-04', 4, 1, null),
        (7, '2022-01-08', '2022-01-10', 2, 2, null);
+
+INSERT INTO hotel ("h_id","h_name","h_address","h_description","h_phone","h_capacity") 
+VALUES
+       (1, 'hilton', 'ankara', 'bisey bisey', '123', 300),
+       (2, 'hilton', 'izmir', 'bisey bisey', '123', 100),
+       (3, 'hilton', 'bodrum', 'bisey bisey', '123', 200),
+       (4, 'aasad', 'Corum', 'bisey bisey', '123', 350),
+       (5, 'asjkfg', 'London', 'description', '123', 3000),
+       (6, 'sdgsd', 'ankara', 'bisey bisey', '123', 300),
+       (7, 'fhdh', 'ankara', 'bisey bisey', '123', 300),
+       (8, 'dhfh', 'ankara', 'bisey bisey', '123', 300);
+
+INSERT INTO room ("h_id","r_number","bed_capacity","r_type","r_price")
+VALUES
+       (1, 1, 2, 'bisey bisey', 300),
+       (1, 2, 3, 'bisey bisey', 100),
+       (1, 3, 3, 'bisey bisey', 200),
+       (2, 1, 1, 'bisey bisey', 350),
+       (2, 2, 2, 'description', 3000),
+       (2, 3, 2, 'bisey bisey', 300),
+       (2, 4, 5, 'bisey bisey', 300),
+       (2, 5, 5, 'bisey bisey', 300);
+
+
