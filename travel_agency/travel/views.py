@@ -197,6 +197,7 @@ def tour_details(request, pk):
         }
         return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r})
 
+
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
 
@@ -303,9 +304,12 @@ def manage_booking(request):
 def booking_detail(request, b_id, h_id, r_id):
     if request.method == "POST":
         stmt = "SELECT * FROM book_room WHERE b_id = "+str(b_id)+" AND h_id = "+str(h_id)+" AND r_number = "+str(r_id)+";"
+        stmt1 = "SELECT no_of_people FROM booking WHERE b_id = "+str(b_id)+";"
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchone()
+        cursor.execute(stmt1)
+        no_of_people = cursor.fetchone()[0]
         cursor.close()
         context = {
             'res_code':r[0],
@@ -316,6 +320,7 @@ def booking_detail(request, b_id, h_id, r_id):
             'r_id':r[6],
             'status':r[7],
             'comment':r[8],
+            'people':no_of_people,
         }
         return render(request, 'travel/update_booking.html', {'context': context})
 
@@ -328,6 +333,9 @@ def update_booking(request):
         cursor.execute(stmt)
         e_id = cursor.fetchone()[0]
         stmt  = "UPDATE book_room SET b_start_date = '"+str(post['check_in'])+"', b_end_date = '"+str(post['check_out'])+"', explanation = '"+comment+"', is_accepted = "+post['is_accepted']+", e_id = '"+str(e_id)+"' WHERE h_id = "+post['hotel_id']+" AND b_id = "+post['b_id']+" AND r_number = "+post['r_id']+";"
+        cursor.execute(stmt)
+        connection.commit()
+        stmt = "UPDATE booking SET b_start_date = '"+str(post['check_in'])+"', b_end_date = '"+str(post['check_out'])+"', no_of_people = "+str(post['number'])+" WHERE b_id = "+str(post['b_id'])+";"
         cursor.execute(stmt)
         connection.commit()
         cursor.close()
