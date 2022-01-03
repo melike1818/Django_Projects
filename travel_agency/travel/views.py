@@ -496,7 +496,7 @@ def update_reservation(request):
             context = {
 
             }
-            return HttpResponseRedirect(reverse('travel:manage_booking'))
+            return HttpResponseRedirect(reverse('travel:manage_reservation'))
 
 def login(request):
     if request.method == 'POST':
