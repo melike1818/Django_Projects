@@ -66,6 +66,12 @@ INSERT INTO extra_activity (a_id, a_date, price)
 VALUES 
        ('9', '2022-01-05', '10');
 
+INSERT INTO extra_activity (p_id, p_name, p_location) 
+VALUES 
+       ('1', 'loc1', 'loc1'),
+       ('2', 'loc2', 'loc2');
+
+
 INSERT INTO hotel ("h_id","h_name","h_address","h_description","h_phone","h_capacity") 
 VALUES
        (1, 'hilton', 'ankara', 'bisey bisey', '123', 300),
