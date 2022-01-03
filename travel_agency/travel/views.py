@@ -106,7 +106,7 @@ def tour_reservation(request):
     if request.method == "GET":
 
         if 'Employee' in request.session:
-            stmt = "SELECT t.t_id, t_start_location, t_description, t_start_date, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
             stmt = "SELECT t_id, t_start_location, t_description, t_start_date, t_price  FROM tour; "
 
@@ -123,7 +123,7 @@ def tour_reservation(request):
         desc = post["desc"]
         people = post["people"]
         if 'Employee' in request.session:
-            stmt2 = "SELECT t.t_id, t_start_location, t_description, t_start_date, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
+            stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id UNION SELECT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
         if 'Customer' in request.session:
             stmt2 = "SELECT t_id, t_start_location, t_description, t_start_date, t_price  FROM tour; "
 
@@ -145,7 +145,7 @@ def tour_reservation(request):
             guide = post["guide"]
             #Filter by Guide
             if(str(guide) == "Assigned"):
-                stmt2 = "SELECT t.t_id, t_start_location, t_description, t_start_date, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id; "
+                stmt2 = "SELECT t.t_id, t_start_location, t_description, t_price, name FROM tour t, assign a, guide g where t.t_id = a.t_id and a.g_id = g.u_id; "
 
             if(str(guide) == "Unassigned"):
                 stmt2 = "SELECT DISTINCT t.t_id, t_start_location, t_description, t_price, '' FROM tour t, assign a where t.t_id NOT IN (SELECT a.t_id FROM assign a); "
