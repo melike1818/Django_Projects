@@ -270,6 +270,7 @@ def update_booking(request):
 
 
 def assign_guide(request,pk):
+    print("inside guide")
     if request.method == "GET":
         stmt = "SELECT u_id, name FROM guide;"
         cursor = connection.cursor()
@@ -280,7 +281,6 @@ def assign_guide(request,pk):
         return render(request, 'travel/assign_guide.html', {'guides': g, 't_id': pk})
     if request.method == "POST":
         post = request.POST
-        guide = post["guide"]
         stmt2 = "SELECT u_id, name FROM guide;"
         #Filter by Guide
         if(str(guide) == "All"):
@@ -297,10 +297,11 @@ def assign_guide(request,pk):
         cursor.execute(stmt2)
         g = cursor.fetchall()
         cursor.close()
-        return render(request, 'travel/assign_guide.html', {'guides': g})
+        return render(request, 'travel/assign_tour.html', {'guides': g})
 
 
 def assign_tour(request, pk, g_id):
+    print("inside tour")
     if request.method == 'POST':
         cursor = connection.cursor()
         parameters = [pk, request.session['startdate'], request.session['enddate'], g_id, request.session['u_id']]
@@ -724,7 +725,6 @@ def manage_reservation(request):
 
         else:
             stmt = "SELECT * FROM reserves"
-        print(stmt)
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
@@ -842,5 +842,34 @@ def logout(request):
     request.session.flush()
     return HttpResponseRedirect("/")
 
-def statistics(request):
-    return render(request, 'travel/Statistics.html')
+def delete_account(request):
+    print("inside delete")
+    u_id = request.session['u_id']
+    print(request.session['type'])
+    stmt = "DELETE FROM '"+request.session['type']+"' WHERE u_id = "+str(u_id)+";"
+    cursor = connection.cursor() 
+    request.session.flush()
+    cursor.execute(stmt) 
+    cursor.close()
+    connection.commit()
+    print("account deleted")
+    return HttpResponseRedirect(reverse('travel:login'))
+
+
+
+
+def statistics(request): 
+    stmt = "SELECT h_id, max(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));" 
+    cursor = connection.cursor() 
+    cursor.execute(stmt) 
+    mx = cursor.fetchone() 
+    cursor.close() 
+    stmt = "SELECT h_id, min(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));" 
+    cursor = connection.cursor() 
+    cursor.execute(stmt) 
+    mn = cursor.fetchone() 
+    stmt = "SELECT h_id, h_name, h_rate_unq FROM (SELECT h_id, h_name,SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id);" 
+    cursor = connection.cursor() 
+    cursor.execute(stmt) 
+    all_rating = cursor.fetchall() 
+    return render(request, 'travel/Statistics.html', {'max': mx,'min':mn,'all':all_rating})

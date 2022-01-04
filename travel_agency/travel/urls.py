@@ -28,13 +28,14 @@ urlpatterns = [
     path('guide_tours/<int:pk>', views.tour_accepted, name = 'tour_accepted'),
 
     path('tours/<int:pk>', views.assign_guide, name = 'assign_guide'),
-    path('tours/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
+    path('tours/assign/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
     path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),
     path('register/', views.register_c, name = 'register'),
     path('register_e_g/', views.register_e_g, name = 'register_e_g'),
     path('logout/', views.logout, name = 'logout'),
+    path('delete/', views.delete_account, name = 'delete_account'),
     path('statistics/', views.statistics, name = 'statistics'),
     #path('assign_tour/', views.assign_tour, name = 'assign_tour'),
 ]

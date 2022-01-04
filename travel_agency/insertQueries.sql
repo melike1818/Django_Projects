@@ -48,7 +48,7 @@ VALUES
        ('6', '2022-03-05', '10', 'wind surf'),
        ('7', '2022-01-08', '10', 'kebap'),
        ('8', '2022-01-05', '80', 'dolmabahçe'),
-       ('9', '2022-01-05', '80', 'arkeoloji');
+       ('9', '2022-01-05', '80', 'arkeoloji'),
        ('10', '2022-01-05', '50', 'painting'),
        ('11', '2022-01-05', '100', 'workshop');
 INSERT INTO place (p_id, p_name, p_location)
