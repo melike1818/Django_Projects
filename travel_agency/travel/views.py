@@ -268,7 +268,6 @@ def update_booking(request):
         }
         return HttpResponseRedirect(reverse('travel:manage_booking'))
 
-
 def assign_guide(request,pk):
     print("inside guide")
     if request.method == "GET":
@@ -298,7 +297,6 @@ def assign_guide(request,pk):
         g = cursor.fetchall()
         cursor.close()
         return render(request, 'travel/assign_tour.html', {'guides': g})
-
 
 def assign_tour(request, pk, g_id):
     print("inside tour")
@@ -380,7 +378,6 @@ def done_booking_e(request, pk, r_id):
     cursor.close()
     return render(request, 'travel/done_booking_e.html', {'hname' : h, 'room' : r_id, 'max': m})
 
-
 def tour_details(request, pk):
     if request.method == "POST":
         print("inside post")
@@ -421,7 +418,13 @@ def tour_details(request, pk):
         't_end_date':h[5],
         't_capacity':h[6]
     }
-    return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r, 'eactivity': ea})
+    
+    stmt4 = "SELECT * FROM tour t natural join evaluate_tour WHERE t.t_id = " + str(pk) + ";"
+    cursor = connection.cursor()
+    cursor.execute(stmt4)
+    k = cursor.fetchall()
+    
+    return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r, 'eactivity': ea, 'comments': k } )
 
 def make_reservation(request, t_id):
     cursor = connection.cursor()
@@ -483,7 +486,38 @@ def make_reservation(request, t_id):
     return render(request, 'travel/done_reservation.html', {'tour' : tour, 'extra' : ea, 'tot': total})
 
 def flight_booking(request):
-    return render(request, 'travel/Flight-Booking.html')
+    if request.method == "GET":
+
+        stmt = "SELECT  * FROM flight; "
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Flight-Booking.html', {'fligths': r} )
+    if request.method == "POST":
+        post = request.POST
+        departure = post["departure"]
+        arrival = post["arrival"]
+        check_in = post["check_in"]
+
+        stmt = "SELECT  * FROM flight; "
+
+        if(departure == ""):
+            departure = ''
+
+        if(arrival == ""):
+            arrival = ''
+
+        if(check_in == ""):
+            check_in = '2022-01-01'
+        
+
+        stmt2 = "SELECT * FROM flight WHERE f_date >= '" + check_in + "' and f_departure like '%" + departure + "%' and f_arrival like '%" + arrival + "%'; "
+        cursor = connection.cursor()
+        cursor.execute(stmt2)
+        r = cursor.fetchall()
+        cursor.close()
+    return render(request, 'travel/Flight-Booking.html' , {'fligths': r}  )
 
 def give_feedback(request, pk):
     if request.method == "GET":

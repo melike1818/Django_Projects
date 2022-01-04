@@ -62,9 +62,6 @@
         <div class="col-sm-6 col-lg-6 p-2">
           <input type="date" class="form-control" name="check_in" id="check_in" required/>
         </div>
-        <div class="col-sm-6 col-lg-6 p-2">
-            <input type="date" class="form-control" name="check_out" id="check_out" required />
-        </div>
       </div>
       <div class = "row">
           <div class="col-sm-5 col-lg-5 p-2 ">
@@ -87,27 +84,36 @@
       <th class="th-sm">Flight ID
 
       </th>
-      <th class="th-sm">Departure
-
-      </th>
-      <th class="th-sm">Destination
-
-      </th>
-      <th class="th-sm">Durationn
+      
+      <th class="th-sm">Date
 
       </th>
       <th class="th-sm">Price
 
       </th>
-      <th class="th-sm">Availibility
+      <th class="th-sm">Departure
 
       </th>
+      <th class="th-sm">Destination
+</th>
+      
       <th class="th-sm">Book
 
       </th>
     </tr>
   </thead>
-  <!-- flights will be displayed here -->
+  {% for fligth in fligths %}
+      <tbody>
+        <tr>
+            {% for value in fligth %}
+                <td class="th-sm">{{value}}</td>
+            {% endfor %}
+          <td class="th-sm">
+             <button type="button" class="btn btn-dark" >Book</button>
+          </td>
+        </tr>
+      </tbody>
+    {% endfor %}
 </table>
 </div>
 </section>
