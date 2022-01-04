@@ -138,8 +138,6 @@ FOREIGN KEY(c_id) REFERENCES customer(u_id));
 
 CREATE TABLE evaluate_tour(
 t_id INT NOT NULL,
-t_start_date DATE NOT NULL,
-t_end_date DATE NOT NULL,
 c_id INT NOT NULL,
 t_comment CHAR(250),
 t_rate INT,

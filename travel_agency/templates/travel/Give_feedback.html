@@ -1,10 +1,84 @@
 {% extends "travel/base.html" %}
 {% block body_block %}
 
+<style type="text/css">
+  .th-sm{
+    background: white;
+  }
+	.search-sec{
+    padding: 2rem;
+	}
+  .container{
+    padding: 2rem;
+	}
+	.search-slt{
+	    display: block;
+	    width: 100%;
+	    font-size: 0.875rem;
+	    line-height: 1.5;
+	    color: #55595c;
+	    background-color: #fff;
+	    background-image: none;
+	    border: 1px solid #ccc;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	.wrn-btn{
+	    width: 100%;
+	    font-size: 16px;
+	    font-weight: 400;
+	    text-transform: capitalize;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	@media (min-width: 992px){
+	    .search-sec{
+	        position: relative;
+	        top: -114px;
+	        background: rgba(26, 70, 104, 0.51);
+	    }
+	}
+
+	@media (max-width: 992px){
+	    .search-sec{
+	        background: #1A4668;
+	    }
+	}
+</style>
+
 <div class="container">
   <div class="jumbotron">
-    <h1>This is give feedback</h1>
-  </div>
+    <form action ="#"  method="post" novalidate="novalidate">
+      {% csrf_token %}
+      <h1>Enter your Feedback</h1>
+      <div class="col-sm-4 col-lg-4 p-2">
+        <input type="rate" class="form-control search-slt" placeholder="rate: /5" name="rate" id="rate">
+     </div>
+     <div class="col-sm-4 col-lg-4 p-2">
+      <input type="desc" class="form-control search-slt" placeholder="write your comment" name="comment" id="comment">
+     </div>
+      <button type="submit" class="btn btn-dark">Submit</button>
+  </form>
+ </div>
 </div>
 
 {% endblock %}
+
+{{% block js %}
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script>
+    $(document).ready(function () {
+    $('#hotel-table').DataTable( {
+        "paging": true,
+        "searching": true,
+        "autoWidth": false,
+        "ordering": true,
+        "columnDefs": [
+            {"width": "50px", "targets": 0},
+            {"width": "250px", "targets": 1},
+        ],
+    }
+    );
+} );
+</script>
+{% endblock js %}
