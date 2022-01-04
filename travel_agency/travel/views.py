@@ -880,8 +880,32 @@ def logout(request):
     return HttpResponseRedirect("/")
 
 def statistics(request):
-    return render(request, 'travel/Statistics.html')
+    stmt = "SELECT h_id, max(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));"
+    cursor = connection.cursor()
+    cursor.execute(stmt)
+    mx = cursor.fetchone()
+    cursor.close()
+    stmt = "SELECT h_id, min(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));"
+    cursor = connection.cursor()
+    cursor.execute(stmt)
+    mn = cursor.fetchone()
+    stmt = "SELECT h_id, h_name, h_rate_unq FROM (SELECT h_id, h_name,SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id);"
+    cursor = connection.cursor()
+    cursor.execute(stmt)
+    all_rating = cursor.fetchall()
+    return render(request, 'travel/Statistics.html', {'max': mx,'min':mn,'all':all_rating})
+
+def delete_account(request):
+    print("inside delete")
+    u_id = request.session['u_id']
+    print(request.session['type'])
+    stmt = "DELETE FROM '"+request.session['type']+"' WHERE u_id = "+str(u_id)+";"
+    cursor = connection.cursor()
+    request.session.flush()
+    cursor.execute(stmt)
+    cursor.close()
+    connection.commit()
+    return HttpResponseRedirect(reverse('travel:login'))
 
 def guide_tours1(request):
     return render(request, 'travel/guide_tours.html')
-
