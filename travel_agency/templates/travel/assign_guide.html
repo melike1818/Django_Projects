@@ -110,7 +110,7 @@
                         <td class="th-sm">{{value}}</td>
                     {% endfor %}
                     <td class="th-sm">
-                        <button type="submit" class="btn btn-dark">Assign Tour</button>
+                        <button type="submit" class="btn btn-sm btn-info" onclick="window.location.href='{% url 'travel:assign_tour' tour.0 guide.0 %}'">Assign Tour</button>
                     </td>
                 </tr>
                 </tbody>
