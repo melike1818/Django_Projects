@@ -13,7 +13,7 @@ urlpatterns = [
     path('flight/', views.flight_booking, name = 'flight'),
     path('previous/', views.previous_trips, name = 'previous'),
     path('previous/<int:pk>', views.give_feedback, name = 'give_feedback'),
-    path('previous/<int:pk>', views.give_feedback_tour, name = 'give_feedback_tour'),
+    path('previous/tour/<int:pk>', views.give_feedback_tour, name = 'give_feedback_tour'),
     path('friends/', views.friends, name = 'friends'),
     # Edit Booking( Employee )
     path('manage_booking/', views.manage_booking, name = 'manage_booking'),

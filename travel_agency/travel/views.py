@@ -100,7 +100,7 @@ def done_booking(request, pk, r_id):
             print(parameters)
 
             cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
-            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 'true', 'created by employee']
+            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 1, 'created by employee']
             cursor.execute("INSERT INTO book_room VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);", parameters)
             cursor.close()
             connection.commit()
@@ -520,7 +520,38 @@ def make_reservation(request, t_id):
     return render(request, 'travel/done_reservation.html', {'tour' : tour, 'extra' : ea, 'tot': total})
 
 def flight_booking(request):
-    return render(request, 'travel/Flight-Booking.html')
+    if request.method == "GET":
+
+        stmt = "SELECT  * FROM flight; "
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/Flight-Booking.html', {'fligths': r} )
+    if request.method == "POST":
+        post = request.POST
+        departure = post["departure"]
+        arrival = post["arrival"]
+        check_in = post["check_in"]
+
+        stmt = "SELECT  * FROM flight; "
+
+        if(departure == ""):
+            departure = ''
+
+        if(arrival == ""):
+            arrival = ''
+
+        if(check_in == ""):
+            check_in = '2022-01-01'
+
+
+        stmt2 = "SELECT * FROM flight WHERE f_date >= '" + check_in + "' and f_departure like '%" + departure + "%' and f_arrival like '%" + arrival + "%'; "
+        cursor = connection.cursor()
+        cursor.execute(stmt2)
+        r = cursor.fetchall()
+        cursor.close()
+    return render(request, 'travel/Flight-Booking.html' , {'fligths': r}  )
 
 def give_feedback(request, pk):
     if request.method == "GET":
@@ -768,9 +799,9 @@ def manage_reservation(request):
         cursor.close()
         return render(request, 'travel/manage_reservation.html', {'reservations': r})
 
-def reservation_detail(request,t_id,e_id,c_id, r_id):
+def reservation_detail(request,t_id,c_id, r_id):
     if request.method == "POST":
-        stmt = "SELECT * FROM reserves WHERE r_id = "+str(r_id)+" AND t_id = "+str(t_id)+" AND c_id = "+str(c_id)+" AND e_id = "+str(e_id)+";"
+        stmt = "SELECT * FROM reserves WHERE r_id = "+str(r_id)+" AND t_id = "+str(t_id)+" AND c_id = "+str(c_id) + " ;"
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchone()
@@ -780,7 +811,6 @@ def reservation_detail(request,t_id,e_id,c_id, r_id):
             't_id':r[1],
             'start':r[2],
             'end':r[3],
-            'e_id':r[4],
             'c_id':r[5],
             'comment':r[6],
             'status':r[7]
@@ -846,7 +876,7 @@ def register_c(request):
         c_id = c_id_o.fetchone()[0]
         parameters = [str(c_id+1), request.POST.get("name", ""),request.POST.get("username", ""),request.POST.get("c_bdate", ""),request.POST.get("address", ""), request.POST.get("c_sex", ""), request.POST.get("pw", ""), request.POST.get("phone", "")]
 
-        cursor.execute("INSERT INTO customer(u_id,name,username,c_bdate,c_address,c_sex,c_wallet,pw,phone) VALUES(%s,%s,%s,%s,%s,%s,0,%s,%s);", parameters)
+        cursor.execute("INSERT INTO customer(u_id,name,username,c_bdate,c_address,c_sex,c_wallet,pw,phone) VALUES(%s,%s,%s,%s,%s,%s,1000,%s,%s);", parameters)
         cursor.close()
         connection.commit()
 
