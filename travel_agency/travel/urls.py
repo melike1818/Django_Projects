@@ -28,7 +28,7 @@ urlpatterns = [
     path('guide_tours/<int:pk>', views.tour_accepted, name = 'tour_accepted'),
 
     path('tours/<int:pk>', views.assign_guide, name = 'assign_guide'),
-    path('tours/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
+    path('tours/assign/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
     path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),

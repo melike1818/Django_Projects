@@ -270,6 +270,7 @@ def update_booking(request):
 
 
 def assign_guide(request,pk):
+    print("inside guide")
     if request.method == "GET":
         stmt = "SELECT u_id, name FROM guide;"
         cursor = connection.cursor()
@@ -280,7 +281,6 @@ def assign_guide(request,pk):
         return render(request, 'travel/assign_guide.html', {'guides': g, 't_id': pk})
     if request.method == "POST":
         post = request.POST
-        guide = post["guide"]
         stmt2 = "SELECT u_id, name FROM guide;"
         #Filter by Guide
         if(str(guide) == "All"):
@@ -297,10 +297,11 @@ def assign_guide(request,pk):
         cursor.execute(stmt2)
         g = cursor.fetchall()
         cursor.close()
-        return render(request, 'travel/assign_guide.html', {'guides': g})
+        return render(request, 'travel/assign_tour.html', {'guides': g})
 
 
 def assign_tour(request, pk, g_id):
+    print("inside tour")
     if request.method == 'POST':
         cursor = connection.cursor()
         parameters = [pk, request.session['startdate'], request.session['enddate'], g_id, request.session['u_id']]
@@ -644,7 +645,6 @@ def manage_reservation(request):
 
         else:
             stmt = "SELECT * FROM reserves"
-        print(stmt)
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchall()
