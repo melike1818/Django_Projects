@@ -9,7 +9,7 @@ urlpatterns = [
     path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('tours/', views.tour_reservation, name = 'tours'),
     path('tours/details/<int:pk>', views.tour_details, name = 'tour_details'),
-
+    path('make_reservation/<int:t_id>', views.make_reservation, name = 'make_reservation'),
     path('flight/', views.flight_booking, name = 'flight'),
     path('previous/', views.previous_trips, name = 'previous'),
     path('previous/<int:pk>', views.give_feedback, name = 'give_feedback'),

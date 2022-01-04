@@ -1,58 +1,64 @@
 {% extends "travel/base.html" %}
 {% block body_block %}
-
-  <div class="container">
-    <div class="jumbotron">
-      <style type="text/css">
+<style type="text/css">
   .th-sm{
-    background: white;
+    background: #9fc4c9;
   }
-  .search-sec{
+  .tour_description{
+    background-color: #fff;
     padding: 2rem;
   }
+  .t_name{
+    text-align: center;
+  }
+	.search-sec{
+    padding: 2rem;
+	}
   .container{
     padding: 2rem;
-  }
-  .search-slt{
-      display: block;
-      width: 100%;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      color: #55595c;
-      background-color: #fff;
-      background-image: none;
-      border: 1px solid #ccc;
-      height: calc(3rem + 2px) !important;
-      border-radius:0;
-  }
-  .wrn-btn{
-      width: 100%;
-      font-size: 16px;
-      font-weight: 400;
-      text-transform: capitalize;
-      height: calc(3rem + 2px) !important;
-      border-radius:0;
-  }
-  @media (min-width: 992px){
-      .search-sec{
-          position: relative;
-          top: -114px;
-          background: rgba(26, 70, 104, 0.51);
-      }
-  }
+	}
+	.search-slt{
+	    display: block;
+	    width: 100%;
+	    font-size: 0.875rem;
+	    line-height: 1.5;
+	    color: #55595c;
+	    background-color: #fff;
+	    background-image: none;
+	    border: 1px solid #ccc;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	.wrn-btn{
+	    width: 100%;
+	    font-size: 16px;
+	    font-weight: 400;
+	    text-transform: capitalize;
+	    height: calc(3rem + 2px) !important;
+	    border-radius:0;
+	}
+	@media (min-width: 992px){
+	    .search-sec{
+	        position: relative;
+	        top: -114px;
+	        background: rgba(26, 70, 104, 0.51);
+	    }
+	}
 
-  @media (max-width: 992px){
-      .search-sec{
-          background: #1A4668;
-      }
-  }
+	@media (max-width: 992px){
+	    .search-sec{
+	        background: #1A4668;
+	    }
+	}
+.makeRes{
+  background: #9fc4c9;
+}
 </style>
-
 <section class="u-clearfix u-section-1" id="sec-6b16">
   <div class="container">
 
     <div class="tour_description">
-      <h1 class="t_name">Tour Details:</h1>
+      <h1 class="t_name">Tour Details</h1>
         <p class="u-text u-text-2">Start Location: {{context.t_start_location}}
         </p>
         <p class="u-text u-text-2">Description: {{context.t_description}}
@@ -74,50 +80,57 @@
       <tr>
         <th class="th-sm">Activity Id
         </th>
+        <th class="th-sm">Activity Name
+        </th>
         <th class="th-sm">Date
         </th>
         <th class="th-sm">Capacity
         </th>
-        <th class="th-sm">Location
-        </th>
         <th class="th-sm">Price
         </th>
-        <th class="th-sm">Reserve
+        <th class="th-sm">Select
         </th>
       </tr>
     </thead>
-    {% for activity in activities %}
+
     <tbody>
+      {% for activity in activities %}
+      <tr>
+          {% for value in activity %}
+              <td class="th-sm">{{value}}</td>
+          {% endfor %}
+            <td class="th-sm">No Price</td>
+            <td class="th-sm"></td>
+      </tr>
+      {% endfor %}
+      <form method="POST" class="form" id="form1">
+        {% csrf_token %}
+      {% for activity in eactivity %}
       <tr>
           {% for value in activity %}
               <td class="th-sm">{{value}}</td>
           {% endfor %}
           <td class="th-sm">
-            <button type="button" class="btn btn-dark" >Check Details</button>
-         </td>
+            <input type="checkbox" name="checks[]" value="{{activity.0}}">
+          </td>
       </tr>
+      {% endfor %}
+      </form>
     </tbody>
-    {% endfor %}
     </table>
   </div>
 </section>
+<div class="text-center">
+    <button type="submit" form="form1" class="btn btn-dark">Select Extra Activities</button>
+</div>
+<br>
+<div class="text-center">
+    <a href="{% url 'travel:make_reservation' t_id=context.t_id  %}" class="makeRes" "><button class="btn btn-dark">Make Reservation</button></a>`
+</div>
 {% endblock %}
 
 {% block js %}
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script>
-    $(document).ready(function () {
-    $('#hotel-table').DataTable( {
-        "paging": true,
-        "searching": true,
-        "autoWidth": false,
-        "ordering": true,
-        "columnDefs": [
-            {"width": "50px", "targets": 0},
-            {"width": "250px", "targets": 1},
-        ],
-    }
-    );
-} );
-</script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 {% endblock js %}

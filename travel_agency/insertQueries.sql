@@ -38,8 +38,8 @@ VALUES
        (7, '2022-01-08', '2022-01-10', 2, 2, null);
 
 
-INSERT INTO activity (a_id, a_date, a_capacity, a_name) 
-VALUES 
+INSERT INTO activity (a_id, a_date, a_capacity, a_name)
+VALUES
        ('1', '2022-01-03', '10', 'fruit collection'),
        ('2', '2022-01-03', '5', 'walk'),
        ('3', '2022-01-05', '50', 'church visit'),
@@ -50,8 +50,13 @@ VALUES
        ('8', '2022-01-05', '80', 'dolmabahçe'),
        ('9', '2022-01-05', '80', 'arkeoloji');
 
-INSERT INTO places_activities (t_id, t_start_date, t_end_date, a_id, a_date, p_id, num_customer) 
-VALUES 
+INSERT INTO place (p_id, p_name, p_location)
+VALUES
+      ('1', 'loc1', 'loc1'),
+      ('2', 'loc2', 'loc2');
+      
+INSERT INTO places_activities (t_id, t_start_date, t_end_date, a_id, a_date, p_id, num_customer)
+VALUES
        ('1', '2022-01-03', '2022-01-12', '1', '2022-01-03', '1', '0'),
        ('2', '2022-01-03', '2022-01-03', '2', '2022-01-03', '2', '0'),
        ('3', '2022-01-05', '2022-01-06', '3', '2022-01-05', '1', '0'),
@@ -62,17 +67,12 @@ VALUES
        ('8', '2022-01-05', '2022-01-06', '8', '2022-01-05', '1', '0'),
        ('8', '2022-01-05', '2022-01-06', '9', '2022-01-05', '2', '0');
 
-INSERT INTO extra_activity (a_id, a_date, price) 
-VALUES 
+INSERT INTO extra_activity (a_id, a_date, price)
+VALUES
        ('9', '2022-01-05', '10');
 
-INSERT INTO extra_activity (p_id, p_name, p_location) 
-VALUES 
-       ('1', 'loc1', 'loc1'),
-       ('2', 'loc2', 'loc2');
 
-
-INSERT INTO hotel ("h_id","h_name","h_address","h_description","h_phone","h_capacity") 
+INSERT INTO hotel ("h_id","h_name","h_address","h_description","h_phone","h_capacity")
 VALUES
        (1, 'hilton', 'ankara', 'bisey bisey', '123', 300),
        (2, 'hilton', 'izmir', 'bisey bisey', '123', 100),
@@ -93,6 +93,3 @@ VALUES
        (2, 3, 2, 'bisey bisey', 300),
        (2, 4, 5, 'bisey bisey', 300),
        (2, 5, 5, 'bisey bisey', 300);
-
-
-
