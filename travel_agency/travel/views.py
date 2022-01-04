@@ -85,6 +85,7 @@ def make_booking(request, pk):
         if 'Employee' in request.session:
             u = 1
         return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h, "user" : u})
+
 def done_booking(request, pk, r_id):
     if request.method == 'POST':
         if 'Employee' in request.session:
@@ -257,25 +258,36 @@ def tour_details(request, pk):
         }
         return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r})
 
-
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
 
-def give_feedback(request, pk):
-    return render(request, 'travel/Give_feedback.html')
+def give_feedback(request, pk, k):
+    if request.method == "GET":
+        return render(request, 'travel/Give_feedback.html')
+    if request.method == "POST":
+        post = request.POST
+        rate = post["rate"]
+        comment = post["comment"]
+        if k == 0:
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO evaluate_hotel(h_id, c_id, h_comment, h_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
+        if k == 1:
+            cursor = connection.cursor()
+            cursor.execute("INSERT INTO evaluate_tour(t_id, c_id, t_comment, t_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
+        return render(request, 'travel/Give_feedback.html')
 
 def previous_trips(request):
     cursor = connection.cursor()
     #Hotel Bookings
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = '1' AND b_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = '1' AND b_end_date < '2023-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     a_b = cursor.fetchall()
 
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = '0' AND b_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = '0' AND b_end_date < '2023-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     d_b = cursor.fetchall()
     print(d_b)
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted IS NULL AND b_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted IS NULL AND b_end_date < '2023-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     w_b = cursor.fetchall()
 
