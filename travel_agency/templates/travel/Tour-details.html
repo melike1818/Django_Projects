@@ -125,8 +125,35 @@
 </div>
 <br>
 <div class="text-center">
-    <a href="{% url 'travel:make_reservation' t_id=context.t_id  %}" class="makeRes" "><button class="btn btn-dark">Make Reservation</button></a>`
+    <a href="{% url 'travel:make_reservation' t_id=context.t_id  %}" class="makeRes" "><button class="btn btn-dark">Make Reservation</button></a>`"
 </div>
+<div class="container">
+  {% if comments|length == 0 %}
+  <div class="d-flex w-100 justify-content-between">
+    <h5 class="mb-1">No comments for this tour yet</h5>
+  </div>
+  {% endif %}
+  <table id="activities" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+  <thead>
+    <tr>
+      <th class="th-sm">Rate
+      </th>
+      <th class="th-sm">Comment
+      </th>
+    </tr>
+  </thead>
+<tbody>
+  {% for comment in comments %}
+  <tr>
+      {% for value in comment %}
+          <td class="th-sm">{{value}}</td>
+      {% endfor %}
+  </tr>
+  {% endfor %}
+</tbody>
+</table>
+</div>
+
 {% endblock %}
 
 {% block js %}
