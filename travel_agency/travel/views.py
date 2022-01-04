@@ -80,12 +80,10 @@ def make_booking(request, pk):
         h = cursor.fetchone()
         print("Hotel Info")
         print(h)
-
         if 'Customer' in request.session:
             u = 0
         if 'Employee' in request.session:
             u = 1
-        print(u)
         return render(request, 'travel/make_booking.html', {'rooms': r, "hotel" : h, "user" : u})
 def done_booking(request, pk, r_id):
     if request.method == 'POST':
@@ -269,11 +267,11 @@ def give_feedback(request, pk):
 def previous_trips(request):
     cursor = connection.cursor()
     #Hotel Bookings
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = 'true' AND b_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = '1' AND b_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     a_b = cursor.fetchall()
 
-    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = 'false' AND b_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM booking NATURAL JOIN book_room NATURAL JOIN hotel WHERE c_id = %s AND is_accepted = '0' AND b_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     d_b = cursor.fetchall()
     print(d_b)
@@ -282,11 +280,11 @@ def previous_trips(request):
     w_b = cursor.fetchall()
 
     #Tours
-    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = 'true' AND t_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = '1' AND t_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     a_t = cursor.fetchall()
 
-    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = 'false' AND t_end_date < '2022-01-30';"
+    stmt = "SELECT * FROM tour NATURAL JOIN reserves NATURAL JOIN reservation WHERE c_id = %s AND is_accepted = '0' AND t_end_date < '2022-01-30';"
     cursor.execute(stmt, [request.session['u_id']] )
     d_t = cursor.fetchall()
 
@@ -498,7 +496,7 @@ def update_reservation(request):
             context = {
 
             }
-            return HttpResponseRedirect(reverse('travel:manage_booking'))
+            return HttpResponseRedirect(reverse('travel:manage_reservation'))
 
 def login(request):
     if request.method == 'POST':
