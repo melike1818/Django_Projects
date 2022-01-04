@@ -21,26 +21,25 @@ VALUES
 
 INSERT INTO employee (u_id, name, username, phone, pw, e_salary)
 VALUES
-       (7, 'tanay', 'tanay', null, '123', null),
-       (8, 'kimya', 'kimya', null, '123', null),
-       (9, 'ırmak', 'ırmak', null, '123', null),
-       (10, 'melike', 'melike', null, '123', null),
-       (11, 'can', 'can', null, '123', null);
+       (1, 'tanay', 'tanay', null, '123', null),
+       (2, 'kimya', 'kimya', null, '123', null),
+       (3, 'ırmak', 'ırmak', null, '123', null),
+       (4, 'melike', 'melike', null, '123', null),
+       (5, 'can', 'can', null, '123', null);
 
 INSERT INTO customer (u_id, name, username, c_bdate, c_address, c_sex, c_wallet, pw, phone)
 VALUES
-       (12, 'ırmo', 'iii', null, null, 'female', 10000, 'asdf', null);
+       (6, 'ırmo', 'iii', null, null, 'female', 10000, 'asdf', null);
 
 INSERT INTO assign (t_id, t_start_date, t_end_date, g_id, e_id, accepted)
 VALUES
-       (3, '2022-01-05', '2022-01-06', 2, 7, null),
-       (4, '2022-01-04', '2022-01-04', 4, 7, null),
-       (7, '2022-01-08', '2022-01-10', 2, 7, null),
-       (1, '2022-01-03', '2022-01-12', 1, 7, null);
+       (3, '2022-01-05', '2022-01-06', 2, 2, null),
+       (4, '2022-01-04', '2022-01-04', 4, 1, null),
+       (7, '2022-01-08', '2022-01-10', 2, 2, null);
 
 
-INSERT INTO activity (a_id, a_date, a_capacity, a_name) 
-VALUES 
+INSERT INTO activity (a_id, a_date, a_capacity, a_name)
+VALUES
        ('1', '2022-01-03', '10', 'fruit collection'),
        ('2', '2022-01-03', '5', 'walk'),
        ('3', '2022-01-05', '50', 'church visit'),
@@ -50,9 +49,15 @@ VALUES
        ('7', '2022-01-08', '10', 'kebap'),
        ('8', '2022-01-05', '80', 'dolmabahçe'),
        ('9', '2022-01-05', '80', 'arkeoloji');
+       ('10', '2022-01-05', '50', 'painting'),
+       ('11', '2022-01-05', '100', 'workshop');
+INSERT INTO place (p_id, p_name, p_location)
+VALUES
+      ('1', 'loc1', 'loc1'),
+      ('2', 'loc2', 'loc2');
 
-INSERT INTO places_activities (t_id, t_start_date, t_end_date, a_id, a_date, p_id, num_customer) 
-VALUES 
+INSERT INTO places_activities (t_id, t_start_date, t_end_date, a_id, a_date, p_id, num_customer)
+VALUES
        ('1', '2022-01-03', '2022-01-12', '1', '2022-01-03', '1', '0'),
        ('2', '2022-01-03', '2022-01-03', '2', '2022-01-03', '2', '0'),
        ('3', '2022-01-05', '2022-01-06', '3', '2022-01-05', '1', '0'),
@@ -61,19 +66,18 @@ VALUES
        ('6', '2022-03-05', '2022-03-10', '6', '2022-03-05', '2', '0'),
        ('7', '2022-01-08', '2022-01-10', '7', '2022-01-08', '1', '0'),
        ('8', '2022-01-05', '2022-01-06', '8', '2022-01-05', '1', '0'),
-       ('8', '2022-01-05', '2022-01-06', '9', '2022-01-05', '2', '0');
+       ('8', '2022-01-05', '2022-01-06', '9', '2022-01-05', '2', '0'),
+       ('8', '2022-01-05', '2022-01-06', '10', '2022-01-05', '2', '0'),
+       ('8', '2022-01-05', '2022-01-06', '11', '2022-01-05', '2', '0');
 
-INSERT INTO extra_activity (a_id, a_date, price) 
-VALUES 
-       ('9', '2022-01-05', '10');
-
-INSERT INTO place (p_id, p_name, p_location)
-VALUES 
-       ('1', 'loc1', 'loc1'),
-       ('2', 'loc2', 'loc2');
+INSERT INTO extra_activity (a_id, a_date, price)
+VALUES
+       ('9', '2022-01-05', '10'),
+       ('10', '2022-01-05', '50'),
+       ('11', '2022-01-05', '100');
 
 
-INSERT INTO hotel ("h_id","h_name","h_address","h_description","h_phone","h_capacity") 
+INSERT INTO hotel ("h_id","h_name","h_address","h_description","h_phone","h_capacity")
 VALUES
        (1, 'hilton', 'ankara', 'bisey bisey', '123', 300),
        (2, 'hilton', 'izmir', 'bisey bisey', '123', 100),
@@ -94,6 +98,3 @@ VALUES
        (2, 3, 2, 'bisey bisey', 300),
        (2, 4, 5, 'bisey bisey', 300),
        (2, 5, 5, 'bisey bisey', 300);
-
-
-

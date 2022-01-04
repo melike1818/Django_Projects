@@ -382,25 +382,105 @@ def done_booking_e(request, pk, r_id):
 
 
 def tour_details(request, pk):
-    if request.method == "GET":
-        stmt = "SELECT * FROM (SELECT a.* FROM tour natural join places_activities as p, activity as a WHERE p.a_id = a.a_id and t_id == '" + str(pk)+ "') natural left outer join (SELECT a.* FROM tour natural join places_activities as p, extra_activity as a WHERE p.a_id = a.a_id and t_id == '" + str(pk)+ "');"
+    if request.method == "POST":
+        print("inside post")
         cursor = connection.cursor()
-        cursor.execute(stmt)
-        r = cursor.fetchall()
-        stmt2 = "SELECT t_id, t_start_location, t_description, t_price, t_start_date, t_end_date, t_capacity FROM tour WHERE t_id == '" + str(pk)+ "'; "
-        cursor.execute(stmt2)
-        h = cursor.fetchone()
-        cursor.close()
-        context = {
-            't_id':h[0],
-            't_start_location':h[1],
-            't_description':h[2],
-            't_price':h[3],
-            't_start_date':h[4],
-            't_end_date':h[5],
-            't_capacity':h[6]
-        }
-        return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r})
+        stmt3 = "SELECT COUNT(ea.a_id) FROM tour as t NATURAL JOIN places_activities as p NATURAL JOIN activity as a NATURAL JOIN extra_activity as ea WHERE ea.a_id = a.a_id and p.a_id = a.a_id and t.t_id == '" + str(pk)+ "'; "
+        cursor.execute(stmt3)
+        ea_count = cursor.fetchone()[0]
+        if ea_count > 0:
+            checked = request.POST.getlist('checks[]')
+            #insert checked extra activities to the buys
+            for c in checked:
+                r_id = (cursor.execute("SELECT COUNT(*) from buys")).fetchone()[0]
+                r_id = r_id + 1
+                parameters = [r_id, c , request.session['u_id'] ]
+                cursor.execute("INSERT INTO buys(receipt_id, a_id, c_id) VALUES(%s,%s,%s);", parameters)
+            cursor.close()
+            connection.commit()
+    stmt = "SELECT a.a_id, a.a_name, a.a_date, a.a_capacity FROM tour as t NATURAL JOIN places_activities as p NATURAL JOIN (SELECT * FROM activity WHERE a_id NOT IN (SELECT a_id from extra_activity)) as a WHERE p.a_id = a.a_id and t.t_id == '" + str(pk)+ "'; "
+    cursor = connection.cursor()
+    cursor.execute(stmt)
+    r = cursor.fetchall()
+
+
+    stmt3 = "SELECT ea.a_id,a.a_name, ea.a_date, a.a_capacity, ea.price FROM tour as t NATURAL JOIN places_activities as p NATURAL JOIN activity as a NATURAL JOIN (SELECT * FROM extra_activity WHERE a_id NOT IN (SELECT a_id from buys WHERE c_id = " + str(request.session['u_id'])+ ")) as ea WHERE ea.a_id = a.a_id and p.a_id = a.a_id and t.t_id == '" + str(pk)+ "'; "
+    cursor.execute(stmt3)
+    ea = cursor.fetchall()
+
+    stmt2 = "SELECT t_id, t_start_location, t_description, t_price, t_start_date, t_end_date, t_capacity FROM tour WHERE t_id == '" + str(pk)+ "'; "
+    cursor.execute(stmt2)
+    h = cursor.fetchone()
+    cursor.close()
+    context = {
+        't_id':h[0],
+        't_start_location':h[1],
+        't_description':h[2],
+        't_price':h[3],
+        't_start_date':h[4],
+        't_end_date':h[5],
+        't_capacity':h[6]
+    }
+    return render(request, 'travel/Tour-details.html', {'context': context, 'activities': r, 'eactivity': ea})
+
+def make_reservation(request, t_id):
+    cursor = connection.cursor()
+    cursor.execute("SELECT * from tour where t_id =" + str(t_id)+";")
+    tour = cursor.fetchone()
+    cursor.execute("SELECT a.a_name, ea.price from extra_activity as ea NATURAL JOIN buys as b NATURAL JOIN activity as a NATURAL JOIN places_activities as p where a.a_id = ea.a_id and a.a_id = p.a_id and ea.a_id = b.a_id and b.c_id = " + str(request.session['u_id'])+" AND p.t_id = " + str(t_id)+ " ;")
+    ea = cursor.fetchall()
+    cursor.close()
+    total = tour[6]
+    for a in ea:
+        total += a[1]
+
+    if request.method == 'POST':
+        if 'Employee' in request.session:
+            #make booking accordingly
+            cursor = connection.cursor()
+            c_id = (cursor.execute("SELECT u_id FROM customer WHERE username = '" + request.POST.get("name", "") + "';")).fetchone()[0]
+
+            print(c_id)
+            b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+            b_id = b_id + 1
+            parameters = [b_id,request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+            print(parameters)
+
+            cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 'true', 'created by employee']
+            cursor.execute("INSERT INTO book_room VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);", parameters)
+            cursor.close()
+            connection.commit()
+
+        if 'Customer' in request.session:
+            cursor = connection.cursor()
+            r_id = (cursor.execute("SELECT COUNT(*) from reserves")).fetchone()[0]
+            r_id = r_id + 1
+
+            #Insert into reservation Table
+            cursor.execute("SELECT t_start_date, t_end_date from tour where t_id =" + str(t_id)+";")
+            tour = cursor.fetchone()
+            t_price = (cursor.execute("SELECT t_price from tour WHERE t_id = " + str(t_id) + ";")).fetchone()[0]
+            ea_price = 0
+            parameters = [r_id,tour[0],tour[1], str(t_price + ea_price), request.POST.get("number", "")]
+            cursor.execute("INSERT INTO reservation(r_id, r_start_date, r_end_date,r_price,r_customer_num) VALUES(%s,%s,%s,%s,%s);", parameters)
+
+            #Insert into reserves Table
+            cursor.execute("SELECT * from tour where t_id =" + str(t_id)+";")
+            t = cursor.fetchone()
+            parameters = [r_id,t_id, tour[0],tour[1],request.session['u_id']]
+            cursor.execute("INSERT INTO reserves(r_id, t_id, t_start_date, t_end_date, c_id) VALUES(%s,%s,%s,%s,%s);", parameters)
+
+            #update wallet
+            cursor.execute("SELECT c_wallet from customer where u_id = " + str(request.session['u_id'])+";")
+            oldW = cursor.fetchone()[0]
+            newWallet = oldW - (int(request.POST.get("number", ""))*total)
+            stmt = "UPDATE customer SET c_wallet = "+ str(newWallet)+" WHERE u_id = " +str(request.session['u_id']) + ";"
+            cursor.execute(stmt)
+            cursor.close()
+            connection.commit()
+
+    return render(request, 'travel/done_reservation.html', {'tour' : tour, 'extra' : ea, 'tot': total})
 
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
@@ -413,9 +493,9 @@ def give_feedback(request, pk):
         rate = post["rate"]
         comment = post["comment"]
         cursor = connection.cursor()
-        try: 
+        try:
             cursor.execute("INSERT INTO evaluate_hotel(h_id, c_id, h_comment, h_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
-        except: 
+        except:
             print("There is already a comment submitted")
         return render(request, 'travel/Give_feedback.html')
 
@@ -432,7 +512,7 @@ def give_feedback_tour(request, pk):
         cursor = connection.cursor()
         cursor.execute(stmt)
         r = cursor.fetchone()
-        try: 
+        try:
             cursor.execute("INSERT INTO evaluate_guide(g_id, c_id, g_comment, g_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + commentg +"', " + str(rateg) +");",)
             cursor.execute("INSERT INTO evaluate_tour(t_id, c_id, t_comment, t_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
             stmt = "SELECT Count(*) as count FROM tour t natural join evaluate_tour WHERE t.t_id = " + pk + ";"
@@ -451,10 +531,10 @@ def give_feedback_tour(request, pk):
             else:
                 stmt = "UPDATE tour SET t_rate = '"+ rate +"' WHERE t_id = "+str(pk)+";"
                 cursor.execute(stmt)
-        except: 
+        except:
             print("There is already a comment submitted")
-        
-        
+
+
         return render(request, 'travel/Give_feedback_tour.html')
 
 def previous_trips(request):
@@ -764,5 +844,3 @@ def logout(request):
 
 def statistics(request):
     return render(request, 'travel/Statistics.html')
-
-
