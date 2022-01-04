@@ -206,16 +206,91 @@ def tour_reservation(request):
         cursor.close()
         return render(request, 'travel/Tour-Reservation.html', {'tours': r})
 
+def guide_tours(request):
+    if request.method == "GET":
+        cursor = connection.cursor()
+        stmt = "SELECT u_id FROM guide where username = '"+request.session['username']+"';"
+        cursor.execute(stmt)
+        g_id = cursor.fetchone()[0]
+        stmt = "SELECT a.t_id, t_name, a.t_start_date, a.t_end_date, t_start_location, accepted FROM tour t, assign a, guide g where t.t_id = a.t_id and g.u_id = '"+str(g_id)+"' and g.u_id = a.g_id;"
+        cursor.execute(stmt)
+        connection.commit()
+        r = cursor.fetchall()
+        print(r)
+        cursor.close()
+        return render(request, 'travel/guide_tours.html', {'tours': r})
+    if request.method == "POST":
+        post = request.POST
+        cursor = connection.cursor()
+        stmt2 = "SELECT u_id FROM guide where username = '"+request.session['username']+"';"
+        cursor.execute(stmt2)
+        g_id = cursor.fetchone()[0]
+        stmt2 = "SELECT a.t_id, t_name, a.t_start_date, a.t_end_date, t_start_location, accepted FROM tour t, assign a, guide g where t.t_id = a.t_id and g.u_id = '"+str(g_id)+"' and g.u_id = a.g_id;"
+        cursor.execute(stmt2)
+        connection.commit()
+        r = cursor.fetchall()
+        print(r)
+        cursor.close()
+        return render(request, 'travel/guide_tours.html', {'tours': r})
+
+def tour_accepted(request,pk):
+    if request.method == "GET":
+        cursor = connection.cursor()
+        stmt = "SELECT u_id FROM guide where username = '"+request.session['username']+"';"
+        cursor.execute(stmt)
+        g_id = cursor.fetchone()[0]
+        stmt = "SELECT a.t_id, t_name, a.t_start_date, a.t_end_date, t_start_location, accepted FROM tour t, assign a, guide g where t.t_id = a.t_id and g.u_id = '"+str(g_id)+"' and g.u_id = a.g_id;"
+        cursor.execute(stmt)
+        connection.commit()
+        r = cursor.fetchall()
+        print(r)
+        cursor.close()
+        return render(request, 'travel/tour_accepted', {'tours': r})
+    if request.method == "POST":
+        post = request.POST
+        cursor = connection.cursor()
+        stmt2 = "SELECT u_id FROM guide where username = '"+request.session['username']+"';"
+        cursor.execute(stmt2)
+        g_id = cursor.fetchone()[0]
+        stmt2 = "UPDATE assign SET accepted = true where g_id ='"+str(g_id)+"' and t_id = '"+str(pk)+"';"
+        cursor.execute(stmt2)
+        connection.commit()
+        r = cursor.fetchall()
+        print(r)
+        cursor.close()
+        return render(request, 'travel/tour_accepted.html', {'tours': r})
+
+
+def update_booking(request):
+    if request.method == "POST":
+        post = request.POST
+        cursor = connection.cursor()
+        comment = request.POST.get("comment", "")
+        stmt = "SELECT u_id FROM Employee where username = '"+request.session['username']+"';"
+        cursor.execute(stmt)
+        e_id = cursor.fetchone()[0]
+        stmt  = "UPDATE book_room SET b_start_date = '"+str(post['check_in'])+"', b_end_date = '"+str(post['check_out'])+"', explanation = '"+comment+"', is_accepted = "+post['is_accepted']+", e_id = '"+str(e_id)+"' WHERE h_id = "+post['hotel_id']+" AND b_id = "+post['b_id']+" AND r_number = "+post['r_id']+";"
+        cursor.execute(stmt)
+        connection.commit()
+        stmt = "UPDATE booking SET b_start_date = '"+str(post['check_in'])+"', b_end_date = '"+str(post['check_out'])+"', no_of_people = "+str(post['number'])+" WHERE b_id = "+str(post['b_id'])+";"
+        cursor.execute(stmt)
+        connection.commit()
+        cursor.close()
+        context = {
+
+        }
+        return HttpResponseRedirect(reverse('travel:manage_booking'))
+
+
 def assign_guide(request,pk):
     if request.method == "GET":
-        t_id = pk
         stmt = "SELECT u_id, name FROM guide;"
         cursor = connection.cursor()
         cursor.execute(stmt)
         g = cursor.fetchall()
         print(g)
         cursor.close()
-        return render(request, 'travel/assign_guide.html', {'guides': r})
+        return render(request, 'travel/assign_guide.html', {'guides': g})
     if request.method == "POST":
         post = request.POST
         guide = post["guide"]
@@ -233,9 +308,23 @@ def assign_guide(request,pk):
             stmt2 = "SELECT DISTINCT g.u_id, name FROM guide g, assign a where g.u_id = a.g_id;"
         cursor = connection.cursor()
         cursor.execute(stmt2)
-        r = cursor.fetchall()
+        g = cursor.fetchall()
         cursor.close()
-        return render(request, 'travel/assign_guide.html', {'guides': r})
+        return render(request, 'travel/assign_guide.html', {'guides': g})
+
+def assign_tour(request, pk, g_id):
+    if request.method == "POST":
+        post = request.POST
+        guide = post["guide"]
+        stmt = "INSERT INTO 'employee'('u_id','name','username','phone','pw','e_salary') VALUES (" + str(e_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("phone", "")+"','"+ request.POST.get("pw", "")+"',0);"
+        parameters = [pk, request.session['startdate'], request.session['enddate'],g_id, request.session['u_id']]
+        cursor.execute("INSERT INTO assign(t_id, t_start_date, t_end_date, g_id, e_id) VALUES(%s,%s,%s,%s,%s);", parameters)
+        cursor = connection.cursor()
+        cursor.execute(stmt2)
+        g = cursor.fetchall()
+        cursor.close()
+        return render(request, 'travel/assign_guide.html', {'guides': g})
+
 
 def tour_details(request, pk):
     if request.method == "GET":
@@ -621,3 +710,5 @@ def logout(request):
 
 def statistics(request):
     return render(request, 'travel/Statistics.html')
+
+

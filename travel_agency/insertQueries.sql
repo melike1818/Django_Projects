@@ -33,9 +33,10 @@ VALUES
 
 INSERT INTO assign (t_id, t_start_date, t_end_date, g_id, e_id, accepted)
 VALUES
-       (3, '2022-01-05', '2022-01-06', 2, 2, null),
-       (4, '2022-01-04', '2022-01-04', 4, 1, null),
-       (7, '2022-01-08', '2022-01-10', 2, 2, null);
+       (3, '2022-01-05', '2022-01-06', 2, 7, null),
+       (4, '2022-01-04', '2022-01-04', 4, 7, null),
+       (7, '2022-01-08', '2022-01-10', 2, 7, null),
+       (1, '2022-01-03', '2022-01-12', 1, 7, null);
 
 
 INSERT INTO activity (a_id, a_date, a_capacity, a_name) 
