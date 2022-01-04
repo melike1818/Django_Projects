@@ -21,7 +21,7 @@ urlpatterns = [
     path('manage_booking/update', views.update_booking, name = 'update_booking'),
     # Reservation( Employee )
     path('manage_reservation/', views.manage_reservation, name = 'manage_reservation'),
-    path('manage_reservation/<int:r_id>/<int:t_id>/<int:e_id>/<int:c_id>', views.reservation_detail, name = 'reservation_detail'),
+    path('manage_reservation/<int:r_id>/<int:t_id>/<int:c_id>', views.reservation_detail, name = 'reservation_detail'),
     path('manage_reservation/update', views.update_reservation, name = 'update_reservation'),
     #Guide tours
     path('guide_tours/', views.guide_tours, name = 'guide_tours'),
@@ -41,6 +41,7 @@ urlpatterns = [
     path('register/', views.register_c, name = 'register'),
     path('register_e_g/', views.register_e_g, name = 'register_e_g'),
     path('logout/', views.logout, name = 'logout'),
+    path('delete/', views.delete_account, name = 'delete_account'),
     path('statistics/', views.statistics, name = 'statistics'),
     #path('assign_tour/', views.assign_tour, name = 'assign_tour'),
 ]

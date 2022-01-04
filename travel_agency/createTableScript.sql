@@ -7,20 +7,20 @@ DROP TABLE IF EXISTS reservation;
 DROP TABLE IF EXISTS evaluate_tour;
 DROP TABLE IF EXISTS buys;
 DROP TABLE IF EXISTS customer;
-DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS feedback;
-DROP TABLE IF EXISTS guide;
 DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS has;
 DROP TABLE IF EXISTS places_activities;
 DROP TABLE IF EXISTS place;
-DROP TABLE IF EXISTS activity;
 DROP TABLE IF EXISTS extra_activity;
 DROP TABLE IF EXISTS room;
 DROP TABLE IF EXISTS hotel;
 DROP TABLE IF EXISTS flight;
-DROP TABLE IF EXISTS tour;
 DROP TABLE IF EXISTS assign;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS guide;
+DROP TABLE IF EXISTS activity;
+DROP TABLE IF EXISTS tour;
 
 CREATE TABLE customer(
 u_id INT NOT NULL,
@@ -134,7 +134,7 @@ g_comment VARCHAR(50),
 g_rate INT,
 PRIMARY KEY(g_id, c_id),
 FOREIGN KEY(g_id) REFERENCES guide(u_id),
-FOREIGN KEY(c_id) REFERENCES customer(u_id));
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE);
 
 CREATE TABLE evaluate_tour(
 t_id INT NOT NULL,
@@ -143,7 +143,7 @@ t_comment CHAR(250),
 t_rate INT,
 PRIMARY KEY(t_id,  c_id),
 FOREIGN KEY(t_id) REFERENCES tour(t_id),
-FOREIGN KEY(c_id) REFERENCES customer(u_id) );
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE);
 
 CREATE TABLE evaluate_hotel(
 h_id INT NOT NULL,
@@ -152,7 +152,7 @@ h_comment CHAR(250),
 h_rate INT,
 PRIMARY KEY(h_id, c_id),
 FOREIGN KEY(h_id) REFERENCES hotel(h_id),
-FOREIGN KEY(c_id) REFERENCES customer(u_id));
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE);
 
 CREATE TABLE places_activities(
 t_id INT NOT NULL,
@@ -173,7 +173,7 @@ a_id INT,
 c_id INT,
 PRIMARY KEY(receipt_id),
 FOREIGN KEY(a_id) REFERENCES extra_activity(a_id),
-FOREIGN KEY(c_id) REFERENCES customer(u_id));
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE) ;
 
 CREATE TABLE reserves(
 r_id INT NOT NULL,
@@ -187,8 +187,8 @@ is_accepted BOOLEAN,
 PRIMARY KEY(t_id,c_id, r_id),
 FOREIGN KEY(r_id) REFERENCES reservation(r_id),
 FOREIGN KEY(t_id) REFERENCES tour(t_id),
-FOREIGN KEY(e_id) REFERENCES employee(u_id),
-FOREIGN KEY(c_id) REFERENCES customer(u_id));
+FOREIGN KEY(e_id) REFERENCES employee(u_id) ON DELETE CASCADE,
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE);
 
 CREATE TABLE feedback(
 t_id INT NOT NULL,
@@ -209,7 +209,7 @@ e_id INT NOT NULL,
 accepted BOOLEAN,
 PRIMARY KEY(t_id, g_id, e_id),
 FOREIGN KEY(t_id) REFERENCES tour(t_id),
-FOREIGN KEY(e_id) REFERENCES employee(u_id),
+FOREIGN KEY(e_id) REFERENCES employee(u_id) ON DELETE CASCADE,
 FOREIGN KEY(g_id) REFERENCES guide(u_id));
 
 CREATE TABLE  book_room(
@@ -225,8 +225,8 @@ explanation CHAR(250),
 PRIMARY KEY(b_id, h_id, r_number),
 FOREIGN KEY(b_id) REFERENCES booking(b_id),
 FOREIGN KEY(h_id, r_number) REFERENCES room(h_id, r_number),
-FOREIGN KEY(c_id) REFERENCES customer(u_id),
-FOREIGN KEY(e_id) REFERENCES employee(u_id));
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE,
+FOREIGN KEY(e_id) REFERENCES employee(u_id)ON DELETE CASCADE) ;
 
 CREATE TABLE book_flight(
 f_booking_id INT NOT NULL,
@@ -238,8 +238,8 @@ is_accepted BOOLEAN,
 explanation CHAR(250),
 PRIMARY KEY(f_booking_id, f_id),
 FOREIGN KEY(f_id) REFERENCES flight(f_id),
-FOREIGN KEY(c_id) REFERENCES customer(u_id),
-FOREIGN KEY(e_id) REFERENCES employee(u_id));
+FOREIGN KEY(c_id) REFERENCES customer(u_id) ON DELETE CASCADE,
+FOREIGN KEY(e_id) REFERENCES employee(u_id)ON DELETE CASCADE) ;
 
 CREATE TABLE has(
 r_id INT NOT NULL,
