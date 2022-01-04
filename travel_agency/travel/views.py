@@ -261,20 +261,57 @@ def tour_details(request, pk):
 def flight_booking(request):
     return render(request, 'travel/Flight-Booking.html')
 
-def give_feedback(request, pk, k):
+def give_feedback(request, pk):
     if request.method == "GET":
         return render(request, 'travel/Give_feedback.html')
     if request.method == "POST":
         post = request.POST
         rate = post["rate"]
         comment = post["comment"]
-        if k == 0:
-            cursor = connection.cursor()
+        cursor = connection.cursor()
+        try: 
             cursor.execute("INSERT INTO evaluate_hotel(h_id, c_id, h_comment, h_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
-        if k == 1:
-            cursor = connection.cursor()
-            cursor.execute("INSERT INTO evaluate_tour(t_id, c_id, t_comment, t_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
+        except: 
+            print("There is already a comment submitted")
         return render(request, 'travel/Give_feedback.html')
+
+def give_feedback_tour(request, pk):
+    if request.method == "GET":
+        return render(request, 'travel/Give_feedback_tour.html')
+    if request.method == "POST":
+        post = request.POST
+        rate = post["rate"]
+        comment = post["comment"]
+        rateg = post["rateg"]
+        commentg = post["commentg"]
+        stmt = "SELECT g_id FROM assign a, tour t WHERE t.t_id = a.t_id;"
+        cursor = connection.cursor()
+        cursor.execute(stmt)
+        r = cursor.fetchone()
+        try: 
+            cursor.execute("INSERT INTO evaluate_guide(g_id, c_id, g_comment, g_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + commentg +"', " + str(rateg) +");",)
+            cursor.execute("INSERT INTO evaluate_tour(t_id, c_id, t_comment, t_rate) VALUES(" + str(pk) + ", " + str(request.session['u_id']) + ", '" + comment +"', " + str(rate) +");",)
+            stmt = "SELECT Count(*) as count FROM tour t natural join evaluate_tour WHERE t.t_id = " + pk + ";"
+            cursor = connection.cursor()
+            cursor.execute(stmt)
+            r = cursor.fetchone()
+            stmt = "SELECT t_rate FROM tour WHERE t_id = " + pk + ";"
+            cursor.execute(stmt)
+            x = cursor.fetchone()
+            if r != 0:
+                temp = r
+                r =  r * x + rate
+                res = r / (temp + 1)
+                stmt = "UPDATE tour SET t_rate = '"+ res +"' WHERE t_id = "+str(pk)+";"
+                cursor.execute(stmt)
+            else:
+                stmt = "UPDATE tour SET t_rate = '"+ rate +"' WHERE t_id = "+str(pk)+";"
+                cursor.execute(stmt)
+        except: 
+            print("There is already a comment submitted")
+        
+        
+        return render(request, 'travel/Give_feedback_tour.html')
 
 def previous_trips(request):
     cursor = connection.cursor()

@@ -50,12 +50,19 @@
   <div class="jumbotron">
     <form action ="#"  method="post" novalidate="novalidate">
       {% csrf_token %}
-        <h1>Enter your Feedback</h1>
+        <h1>Enter your Feedback for the Tour</h1>
         <div class="col-sm-4 col-lg-4 p-2">
           <input type="rate" class="form-control search-slt" placeholder="rate: /5" name="rate" id="rate">
        </div>
        <div class="col-sm-4 col-lg-4 p-2">
         <input type="desc" class="form-control search-slt" placeholder="write your comment" name="comment" id="comment">
+       </div>
+       <h1>Enter your Feedback for the Guide</h1>
+        <div class="col-sm-4 col-lg-4 p-2">
+          <input type="rate" class="form-control search-slt" placeholder="rate: /5" name="rateg" id="rateg">
+       </div>
+       <div class="col-sm-4 col-lg-4 p-2">
+        <input type="desc" class="form-control search-slt" placeholder="write your comment" name="commentg" id="commentg">
        </div>
         <button type="submit" class="btn btn-dark">Submit</button>
   </form>
