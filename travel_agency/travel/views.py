@@ -842,5 +842,15 @@ def logout(request):
     request.session.flush()
     return HttpResponseRedirect("/")
 
-def statistics(request):
-    return render(request, 'travel/Statistics.html')
+def statistics(request): 
+    stmt = "SELECT h_id, max(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));" 
+    cursor = connection.cursor() 
+    cursor.execute(stmt) 
+    mx = cursor.fetchone() 
+    cursor.close() 
+    stmt = "SELECT h_id, min(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));" 
+    cursor = connection.cursor() cursor.execute(stmt) mn = cursor.fetchone() stmt = "SELECT h_id, h_name, h_rate_unq FROM (SELECT h_id, h_name,SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id);" 
+    cursor = connection.cursor() 
+    cursor.execute(stmt) 
+    all_rating = cursor.fetchall() 
+    return render(request, 'travel/Statistics.html', {'max': mx,'min':mn,'all':all_rating})
