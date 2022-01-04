@@ -26,9 +26,15 @@ urlpatterns = [
     #Guide tours
     path('guide_tours/', views.guide_tours, name = 'guide_tours'),
     path('guide_tours/<int:pk>', views.tour_accepted, name = 'tour_accepted'),
+    path('guide_tours1/<int:pk>', views.tour_declined, name = 'tour_declined'),
+    path('state_reason/<int:pk>', views.state_reason, name = 'state_reason'),
+    path('guide_feedback/<int:pk>/', views.guide_feedback, name = 'guide_feedback'),
+
+
 
     path('tours/<int:pk>', views.assign_guide, name = 'assign_guide'),
-    path('tours/assign/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
+    path('tours/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
+
     path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),
