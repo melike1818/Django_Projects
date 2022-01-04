@@ -234,18 +234,6 @@ def guide_tours(request):
         return render(request, 'travel/guide_tours.html', {'tours': r})
 
 def tour_accepted(request,pk):
-    if request.method == "GET":
-        cursor = connection.cursor()
-        stmt = "SELECT u_id FROM guide where username = '"+request.session['username']+"';"
-        cursor.execute(stmt)
-        g_id = cursor.fetchone()[0]
-        stmt = "SELECT a.t_id, t_name, a.t_start_date, a.t_end_date, t_start_location, accepted FROM tour t, assign a, guide g where t.t_id = a.t_id and g.u_id = '"+str(g_id)+"' and g.u_id = a.g_id;"
-        cursor.execute(stmt)
-        connection.commit()
-        r = cursor.fetchall()
-        print(r)
-        cursor.close()
-        return render(request, 'travel/tour_accepted', {'tours': r})
     if request.method == "POST":
         post = request.POST
         cursor = connection.cursor()
@@ -259,7 +247,6 @@ def tour_accepted(request,pk):
         print(r)
         cursor.close()
         return render(request, 'travel/tour_accepted.html', {'tours': r})
-
 
 def update_booking(request):
     if request.method == "POST":
@@ -290,7 +277,7 @@ def assign_guide(request,pk):
         g = cursor.fetchall()
         print(g)
         cursor.close()
-        return render(request, 'travel/assign_guide.html', {'guides': g})
+        return render(request, 'travel/assign_guide.html', {'guides': g, 't_id': pk})
     if request.method == "POST":
         post = request.POST
         guide = post["guide"]
@@ -312,18 +299,85 @@ def assign_guide(request,pk):
         cursor.close()
         return render(request, 'travel/assign_guide.html', {'guides': g})
 
+
 def assign_tour(request, pk, g_id):
-    if request.method == "POST":
-        post = request.POST
-        guide = post["guide"]
-        stmt = "INSERT INTO 'employee'('u_id','name','username','phone','pw','e_salary') VALUES (" + str(e_id+1) + ",'" + request.POST.get("name", "") + "','" + request.POST.get("username", "") +"','"+ request.POST.get("phone", "")+"','"+ request.POST.get("pw", "")+"',0);"
-        parameters = [pk, request.session['startdate'], request.session['enddate'],g_id, request.session['u_id']]
-        cursor.execute("INSERT INTO assign(t_id, t_start_date, t_end_date, g_id, e_id) VALUES(%s,%s,%s,%s,%s);", parameters)
+    if request.method == 'POST':
         cursor = connection.cursor()
-        cursor.execute(stmt2)
-        g = cursor.fetchall()
+        parameters = [pk, request.session['startdate'], request.session['enddate'], g_id, request.session['u_id']]
+        cursor.execute("INSERT INTO assign(t_id, t_start_date, t_end_date, g_id, e_id) VALUES(%s,%s,%s,%s,%s);", parameters)
         cursor.close()
-        return render(request, 'travel/assign_guide.html', {'guides': g})
+        connection.commit()
+        cursor = connection.cursor()
+
+    r = cursor.fetchall()
+    cursor.close()
+
+    return render(request, 'travel/assign_tour.html', {'tours' : r})
+
+def done_booking(request, pk, r_id):
+    if request.method == 'POST':
+        if 'Employee' in request.session:
+            #make booking accordingly
+            cursor = connection.cursor()
+            c_id = (cursor.execute("SELECT u_id FROM customer WHERE username = '" + request.POST.get("name", "") + "';")).fetchone()[0]
+
+            print(c_id)
+            b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+            b_id = b_id + 1
+            parameters = [b_id,request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+            print(parameters)
+
+            cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 'true', 'created by employee']
+            cursor.execute("INSERT INTO book_room VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);", parameters)
+            cursor.close()
+            connection.commit()
+
+        if 'Customer' in request.session:
+            cursor = connection.cursor()
+            b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+            b_id = b_id + 1
+            #Insert into booking Table
+            parameters = [b_id, request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+            cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+            #Insert into book_room table
+            parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.session['u_id'], r_id]
+            cursor.execute("INSERT INTO book_room (b_id, h_id, b_start_date, b_end_date,c_id, r_number) VALUES(%s,%s,%s,%s,%s,%s);", parameters)
+            cursor.close()
+            connection.commit()
+    cursor = connection.cursor()
+    cursor.execute("SELECT h_name from hotel where h_id =" + str(pk)+";")
+    h = cursor.fetchone()
+    cursor.execute("SELECT bed_capacity from room where h_id =" + str(pk) + " AND r_number = " + str(r_id)+";")
+    m = cursor.fetchone()
+    cursor.close()
+    return render(request, 'travel/done_booking.html', {'hname' : h, 'room' : r_id, 'max': m})
+
+def done_booking_e(request, pk, r_id):
+    if request.method == 'POST':
+        #make booking accordingly
+        cursor = connection.cursor()
+        c_id = (cursor.execute("SELECT u_id FROM customer WHERE username = '" + request.POST.get("name", "") + "';")).fetchone()[0]
+
+        print(c_id)
+        b_id = (cursor.execute("SELECT COUNT(*) from booking")).fetchone()[0]
+        b_id = b_id + 1
+        parameters = [b_id,request.POST.get("check_in", ""), request.POST.get("check_out", ""), request.POST.get("number", "")]
+        print(parameters)
+
+        cursor.execute("INSERT INTO booking(b_id,b_start_date, b_end_date, no_of_people) VALUES(%s,%s,%s,%s);", parameters)
+        parameters = [b_id, pk, request.POST.get("check_in", ""), request.POST.get("check_out", ""), c_id, request.session['u_id'], r_id, 'true', 'created by employee']
+        cursor.execute("INSERT INTO book_room VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s);", parameters)
+        cursor.close()
+        connection.commit()
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT h_name from hotel where h_id =" + str(pk)+";")
+    h = cursor.fetchone()
+    cursor.execute("SELECT bed_capacity from room where h_id =" + str(pk) + " AND r_number = " + str(r_id)+";")
+    m = cursor.fetchone()
+    cursor.close()
+    return render(request, 'travel/done_booking_e.html', {'hname' : h, 'room' : r_id, 'max': m})
 
 
 def tour_details(request, pk):
