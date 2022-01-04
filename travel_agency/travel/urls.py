@@ -35,6 +35,7 @@ urlpatterns = [
     path('register/', views.register_c, name = 'register'),
     path('register_e_g/', views.register_e_g, name = 'register_e_g'),
     path('logout/', views.logout, name = 'logout'),
+    path('delete/', views.delete_account, name = 'delete_account'),
     path('statistics/', views.statistics, name = 'statistics'),
     #path('assign_tour/', views.assign_tour, name = 'assign_tour'),
 ]

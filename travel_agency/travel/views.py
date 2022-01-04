@@ -842,6 +842,22 @@ def logout(request):
     request.session.flush()
     return HttpResponseRedirect("/")
 
+def delete_account(request):
+    print("inside delete")
+    u_id = request.session['u_id']
+    print(request.session['type'])
+    stmt = "DELETE FROM '"+request.session['type']+"' WHERE u_id = "+str(u_id)+";"
+    cursor = connection.cursor() 
+    request.session.flush()
+    cursor.execute(stmt) 
+    cursor.close()
+    connection.commit()
+    print("account deleted")
+    return HttpResponseRedirect(reverse('travel:login'))
+
+
+
+
 def statistics(request): 
     stmt = "SELECT h_id, max(h_rate_unq) FROM (SELECT h_id, h_rate_unq FROM (SELECT h_id, SUM(h_rate)/COUNT(h_rate) AS h_rate_unq FROM hotel NATURAL JOIN evaluate_hotel GROUP BY h_id));" 
     cursor = connection.cursor() 

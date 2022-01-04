@@ -152,9 +152,9 @@
 							Overview </a>
 						</li>
 						<li>
-							<a href="#">
+							<a href="{% url 'travel:delete_account' %}">
 							<i class="glyphicon glyphicon-user"></i>
-							Account Settings </a>
+							Delete Account </a>
 						</li>
 						<li>
 							<a href="{% url 'travel:previous' %}">
@@ -193,6 +193,7 @@
                            {{profile.2}}
                          </div>
                        </div>
+                      {% if 'Customer' in request.session %}
                        <hr>
                        <div class="row">
                          <div class="col-sm-3">
@@ -202,6 +203,8 @@
                            {{profile.8}}
                          </div>
                        </div>
+                       {% endif %}
+                       {% if 'Customer' in request.session %}
                        <hr>
                        <div class="row">
                          <div class="col-sm-3">
@@ -211,10 +214,15 @@
                            {{profile.4}}
                          </div>
                        </div>
+                       {% endif %}
                        <hr>
                        <div class="row">
                          <div class="col-sm-3">
+                           {% if 'Customer' in request.session %}
                            <h6 class="mb-0">Birth Date</h6>
+                           {% else %}
+                           <h6 class="mb-0">Mobile</h6>                           
+                           {% endif %}
                          </div>
                          <div class="col-sm-9 text-secondary">
                            {{profile.3}}
@@ -223,13 +231,19 @@
                        <hr>
                        <div class="row">
                          <div class="col-sm-3">
+                          {% if 'Customer' in request.session %}
                            <h6 class="mb-0">Gender</h6>
+                           {% else %}
+                           <h6 class="mb-0">Salary</h6>
+
+                           {% endif %}
                          </div>
                          <div class="col-sm-9 text-secondary">
                            {{profile.5}}
                          </div>
                        </div>
                        <hr>
+                      {% if 'Customer' in request.session %}
                        <div class="row">
                          <div class="col-sm-3">
                            <h6 class="mb-0">Wallet</h6>
@@ -238,6 +252,7 @@
                            {{profile.6}}
                          </div>
                        </div>
+                       {% endif %}
                      </div>
                    </div>
             </div>
