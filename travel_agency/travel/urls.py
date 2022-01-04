@@ -13,6 +13,7 @@ urlpatterns = [
     path('flight/', views.flight_booking, name = 'flight'),
     path('previous/', views.previous_trips, name = 'previous'),
     path('previous/<int:pk>', views.give_feedback, name = 'give_feedback'),
+    path('previous/<int:pk>', views.give_feedback_tour, name = 'give_feedback_tour'),
     path('friends/', views.friends, name = 'friends'),
     # Edit Booking( Employee )
     path('manage_booking/', views.manage_booking, name = 'manage_booking'),
@@ -22,9 +23,12 @@ urlpatterns = [
     path('manage_reservation/', views.manage_reservation, name = 'manage_reservation'),
     path('manage_reservation/<int:r_id>/<int:t_id>/<int:e_id>/<int:c_id>', views.reservation_detail, name = 'reservation_detail'),
     path('manage_reservation/update', views.update_reservation, name = 'update_reservation'),
+    #Guide tours
+    path('guide_tours/', views.guide_tours, name = 'guide_tours'),
+    path('guide_tours/<int:pk>', views.tour_accepted, name = 'tour_accepted'),
 
     path('tours/<int:pk>', views.assign_guide, name = 'assign_guide'),
-    #path('tours/<int:pk>/<int:g_id>', views.assign_tour, name = 'assign_tour'),
+    path('tours/<int:pk>/<int:g_id>/', views.assign_tour, name = 'assign_tour'),
     path('hotels/<int:pk>/<int:r_id>/', views.done_booking, name = 'done_booking'),
     path('profile/', views.my_profile, name = 'profile'),
     path('login/', views.login, name = 'login'),
@@ -32,4 +36,5 @@ urlpatterns = [
     path('register_e_g/', views.register_e_g, name = 'register_e_g'),
     path('logout/', views.logout, name = 'logout'),
     path('statistics/', views.statistics, name = 'statistics'),
+    #path('assign_tour/', views.assign_tour, name = 'assign_tour'),
 ]

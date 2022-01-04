@@ -118,7 +118,7 @@
   </a>
   {% endif %}
   {% for tour in a_tour %}
-  <a href="{% url 'travel:give_feedback' pk=tour.0 %}" class="list-group-item list-group-item-action flex-column align-items-start">
+  <a href="{% url 'travel:give_feedback_tour' pk=tour.0%}" class="list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">{{tour.1}} Tour</h5>
       <small>Reservation Date: {{tour.2}} - {{tour.3}} </small>
